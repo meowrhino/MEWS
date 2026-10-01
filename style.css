@@ -1,0 +1,102 @@
+html, body {
+    margin: 0;
+    height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: none;
+    background: #000;
+    color: #fff;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#bg, #veil, #news {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#veil {
+    background: #000;
+    opacity: 0.35;
+    transition: opacity 1.2s ease;
+    pointer-events: none;
+}
+
+#news { pointer-events: none; }
+
+.noticia {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    margin: 0;
+    font-size: clamp(1.6rem, 8vw, 2.6rem);
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    will-change: transform;
+}
+.noticia.visible { opacity: 1; }
+
+#neko {
+    position: fixed;
+    left: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
+
+#presets {
+    position: fixed;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    max-width: calc(100vw - 112px); /* deja sitio al neko */
+    font-size: .75rem;
+}
+#presets[hidden] { display: none; }
+#presets select, #presets button {
+    appearance: none;
+    -webkit-appearance: none;
+    max-width: 100%;
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    color: #fff;
+    font: inherit;
+    text-align: right;
+    text-overflow: ellipsis;
+    opacity: .6;
+    cursor: pointer;
+}
+#presets select:hover, #presets button:hover { opacity: 1; }
+#presets option { color: #000; }
+
+#start {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    border: 0;
+    background: #000;
+    color: #fff;
+    font: inherit;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: opacity 1.5s ease;
+}
+#start small { font-size: .9rem; opacity: .6; }
+#start.hidden { opacity: 0; pointer-events: none; }

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#000">
+    <title>monicas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="bg"></canvas>
+    <div id="veil"></div>
+    <div id="news" aria-live="polite"></div>
+    <img id="neko" src="neko/Awake.ico" alt="">
+    <div id="presets" hidden>
+        <select id="preset" aria-label="preset del fondo"></select>
+        <button id="cycle" type="button" aria-pressed="true" aria-label="ciclar presets">⟳ ciclo</button>
+    </div>
+
+    <button id="start" type="button">
+        <span>toca para entrar</span>
+        <small>usa auriculares</small>
+    </button>
+
+    <script src="vendor/butterchurn-presets/base.min.js" defer></script>
+    <script type="module">
+        import butterchurn from './vendor/butterchurn/butterchurn.js';
+        window.butterchurn = butterchurn;
+    </script>
+    <script src="main.js" defer></script>
+</body>
+</html>
