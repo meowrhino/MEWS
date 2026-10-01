@@ -21,6 +21,7 @@ let ctx, master, analyser, visualizer;
 let titulares = [], cola = [];
 let news = [];                // [{ el, x, y, h }]
 let spawned = 0;              // noticias desde la última vez que la pantalla quedó vacía
+let veil = 0;                 // 0 = fondo limpio, 1 = tapado del todo
 let lastScroll = performance.now();
 
 // ===== Audio: binaural + pad + ruido, todo generado =====
@@ -129,7 +130,7 @@ function startVisualizer() {
         visualizer.setRendererSize(innerWidth, innerHeight);
     });
     (function loop() {
-        visualizer.render();
+        if (veil < 1) visualizer.render(); // tapado del todo: no se ve, no gastamos batería
         requestAnimationFrame(loop);
     })();
 }
@@ -181,7 +182,7 @@ function spawn() {
 }
 
 function updateVeil() {
-    const veil = Math.min(1, news.length / MAX_NEWS);
+    veil = Math.min(1, news.length / MAX_NEWS);
     veilEl.style.opacity = BASE_DIM + (0.97 - BASE_DIM) * veil;
     if (master) master.gain.setTargetAtTime(MUSIC_VOLUME * (1 - veil) ** 1.5, ctx.currentTime, 0.8);
 }
