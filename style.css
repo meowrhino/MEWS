@@ -20,7 +20,6 @@ html, body {
 
 #veil {
     background: #000;
-    opacity: 0.35;
     transition: opacity 1.2s ease;
     pointer-events: none;
 }
@@ -53,27 +52,27 @@ html, body {
     pointer-events: none;
 }
 
-#preset {
+#presets {
     position: fixed;
     right: 16px;
     bottom: calc(16px + env(safe-area-inset-bottom));
     max-width: calc(100vw - 112px); /* deja sitio al neko */
-    appearance: none;
-    -webkit-appearance: none;
     padding: 4px 0;
-    border: 0;
-    background: none;
-    color: #fff;
-    font: inherit;
     font-size: .75rem;
-    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
     opacity: .6;
+}
+#presets:hover { opacity: 1; }
+#preset {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    font-size: 16px; /* menos de 16px hace zoom en iOS al tocar */
     cursor: pointer;
 }
-#preset[hidden] { display: none; }
-#preset:hover { opacity: 1; }
-#preset option, #preset optgroup { color: #000; }
 
 #start {
     position: fixed;
@@ -87,9 +86,10 @@ html, body {
     background: #000;
     color: #fff;
     font: inherit;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: opacity 1.5s ease;
 }
+#start strong { font-size: 2rem; font-weight: 400; margin-bottom: .5rem; }
 #start small { font-size: .9rem; opacity: .6; }
 #start.hidden { opacity: 0; pointer-events: none; }

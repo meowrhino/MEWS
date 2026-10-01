@@ -1,7 +1,7 @@
 // Cuando exista la API del compañero: poner su URL aquí y ajustar el campo en textoDe()
 const API_URL = '';
 const FALLBACK_URL = 'noticias.json';
-const textoDe = (n) => n.titulo ?? n.title ?? String(n);
+const textoDe = (n) => (typeof n === 'string' ? n : n?.titulo ?? n?.title);
 
 const MAX_NEWS = 25;          // con esta cantidad el velo es negro total
 const BASE_DIM = 0.35;        // oscuridad del fondo sin noticias (los presets son muy brillantes)
@@ -19,12 +19,14 @@ const canvas = $('bg'), veilEl = $('veil'), newsEl = $('news'), nekoEl = $('neko
 
 let ctx, master, analyser, visualizer;
 let titulares = [], cola = [];
-let news = [];                // [{ el, x, y }]
+let news = [];                // [{ el, x, y, h }]
 let spawned = 0;              // noticias desde la última vez que la pantalla quedó vacía
 let lastScroll = performance.now();
 
 // ===== Audio: binaural + pad + ruido, todo generado =====
 function startAudio() {
+    // iOS: sin esto el audio web no suena con el móvil en silencio (iOS 17+)
+    if (navigator.audioSession) navigator.audioSession.type = 'playback';
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     master = ctx.createGain();
     master.gain.value = 0;
@@ -94,7 +96,7 @@ function startVisualizer() {
     visualizer.connectAudio(analyser);
 
     // Desplegable abajo a la derecha: primera opción = ciclar sí/no, luego los presets
-    const select = $('preset');
+    const select = $('preset'), label = $('preset-name');
     const cycleOpt = new Option('', 'cycle');
     const group = document.createElement('optgroup');
     group.label = 'presets';
@@ -104,6 +106,7 @@ function startVisualizer() {
     const setPreset = (i, blend) => {
         current = i;
         select.value = i;
+        label.textContent = `${cycling ? '⟳' : '‖'} ${keys[i]}`;
         cycleOpt.text = cycling ? '⟳ ciclando (tocar para fijar)' : '‖ fijo (tocar para ciclar)';
         visualizer.loadPreset(all[keys[i]], blend);
         clearInterval(timer);
@@ -118,7 +121,7 @@ function startVisualizer() {
         }
     });
     setPreset(0, 0);
-    select.hidden = false;
+    $('presets').hidden = false;
 
     addEventListener('resize', () => {
         canvas.width = innerWidth;
@@ -155,15 +158,17 @@ function place(n) {
 }
 
 function spawn() {
-    if (titulares.length) {
+    if (titulares.length && !document.hidden) {
         const el = document.createElement('p');
         el.className = 'noticia';
         el.textContent = nextTitular();
         newsEl.append(el);
+        const h = el.offsetHeight;
         const n = {
             el,
+            h,
             x: (Math.random() - 0.5) * innerWidth * 0.3,
-            y: Math.random() * Math.max(0, innerHeight * 0.85 - el.offsetHeight)
+            y: Math.random() * Math.max(0, innerHeight * 0.85 - h)
         };
         place(n);
         news.push(n);
@@ -187,7 +192,7 @@ function scrollDown(dy) {
     lastScroll = performance.now();
     news = news.filter((n) => {
         n.y -= dy;
-        if (n.y + n.el.offsetHeight < 0) {
+        if (n.y + n.h < 0) {
             n.el.remove();
             return false;
         }
@@ -213,11 +218,7 @@ addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 // ===== Neko =====
-const sprites = {};
-['Awake', 'Down1', 'down2', 'yawn2', 'sleep1', 'sleep2'].forEach((s) => {
-    sprites[s] = new Image();
-    sprites[s].src = `neko/${s}.ico`;
-});
+['Down1', 'down2', 'yawn2', 'sleep1', 'sleep2'].forEach((s) => { new Image().src = `neko/${s}.ico`; }); // precarga
 let tick = 0;
 setInterval(() => {
     tick++;
@@ -229,9 +230,14 @@ setInterval(() => {
     else s = Math.floor(tick / 5) % 2 ? 'sleep1' : 'sleep2';
     if (nekoEl.dataset.s !== s) {
         nekoEl.dataset.s = s;
-        nekoEl.src = sprites[s].src;
+        nekoEl.src = `neko/${s}.ico`;
     }
 }, 120);
+
+// Pestaña oculta o móvil bloqueado: silencio (y spawn() no añade noticias)
+document.addEventListener('visibilitychange', () => {
+    if (ctx) document.hidden ? ctx.suspend() : ctx.resume();
+});
 
 // ===== Inicio (el audio necesita un toque en móvil) =====
 startEl.addEventListener('click', async () => {

@@ -15,10 +15,15 @@
     <div id="veil"></div>
     <div id="news" aria-live="polite"></div>
     <img id="neko" src="neko/Awake.ico" alt="">
-    <select id="preset" aria-label="preset del fondo" hidden></select>
+    <!-- el select va invisible encima del texto: iOS no deja alinear el texto de un select -->
+    <label id="presets" hidden>
+        <span id="preset-name"></span>
+        <select id="preset" aria-label="preset del fondo"></select>
+    </label>
 
     <button id="start" type="button">
-        <span>toca para entrar</span>
+        <strong>bienvenide</strong>
+        <span>click/toca la pantalla para entrar</span>
         <small>usa auriculares</small>
     </button>
 
