@@ -93,25 +93,32 @@ function startVisualizer() {
     }
     visualizer.connectAudio(analyser);
 
-    // Selector abajo a la derecha: nombre del preset actual + ciclo sí/no
-    const select = $('preset'), cycleBtn = $('cycle');
-    select.append(...keys.map((k) => new Option(k)));
-    let cycling = true, timer;
+    // Desplegable abajo a la derecha: primera opción = ciclar sí/no, luego los presets
+    const select = $('preset');
+    const cycleOpt = new Option('', 'cycle');
+    const group = document.createElement('optgroup');
+    group.label = 'presets';
+    group.append(...keys.map((k, i) => new Option(k, i)));
+    select.append(cycleOpt, group);
+    let cycling = true, current = 0, timer;
     const setPreset = (i, blend) => {
-        select.selectedIndex = i;
+        current = i;
+        select.value = i;
+        cycleOpt.text = cycling ? '⟳ ciclando (tocar para fijar)' : '‖ fijo (tocar para ciclar)';
         visualizer.loadPreset(all[keys[i]], blend);
         clearInterval(timer);
-        if (cycling) timer = setInterval(() => setPreset((select.selectedIndex + 1) % keys.length, BLEND_SECONDS), PRESET_SECONDS * 1000);
+        if (cycling) timer = setInterval(() => setPreset((current + 1) % keys.length, BLEND_SECONDS), PRESET_SECONDS * 1000);
     };
-    select.addEventListener('change', () => setPreset(select.selectedIndex, BLEND_SECONDS));
-    cycleBtn.addEventListener('click', () => {
-        cycling = !cycling;
-        cycleBtn.setAttribute('aria-pressed', cycling);
-        cycleBtn.textContent = cycling ? '⟳ ciclo' : '‖ fijo';
-        setPreset(select.selectedIndex, 0);
+    select.addEventListener('change', () => {
+        if (select.value === 'cycle') {
+            cycling = !cycling;
+            setPreset(current, 0);
+        } else {
+            setPreset(+select.value, BLEND_SECONDS);
+        }
     });
     setPreset(0, 0);
-    $('presets').hidden = false;
+    select.hidden = false;
 
     addEventListener('resize', () => {
         canvas.width = innerWidth;
