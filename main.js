@@ -225,6 +225,7 @@ function scrollDown(dy) {
         clearTimeout(spawnTimer);
         premio = true;
         thoughtEl.textContent = nextPensamiento() ?? '';
+        bubble.classList.add('hidden'); // la ayuda no se monta encima del pensamiento
         cambiarFondo();
     }
     updateVeil();
