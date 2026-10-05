@@ -25,6 +25,7 @@ La API tiene que devolver un array JSON y permitir CORS desde el dominio de la w
 - `MUSIC_VOLUME`, `PRESETS`, `PRESET_SECONDS`.
 - Ritmo: `INTRO_SECONDS`, `RUN_SECONDS`, `CALM_SECONDS`, `FIRST_GAP`, `ACCEL`, `MIN_GAP`.
 - Textos del neko: en `index.html`, dentro de `#bubble`.
+- Al apartar todas las noticias cambia el fondo al siguiente preset (salvo si se ha fijado uno en el menú).
 - Pensamientos del neko: `pensamientos.json`, mismo formato que `noticias.json`. Al apartar todas las noticias el neko se rasca con el pensamiento encima y bosteza (todo dentro de `THOUGHT_SECONDS`), se duerme y vuelven las noticias.
 - `neko/` tiene todos los sprites de Neko98 (correr en 8 direcciones, arañar paredes `*claw*`, lavarse `wash2`, huellas `fp_*`…), aunque no se usen todos.
 - Tocar al neko en su esquina: bocadillo de ayuda (`#msg-ayuda` en `index.html`, `HELP_SECONDS`).

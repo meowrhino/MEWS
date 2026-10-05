@@ -13,6 +13,7 @@ const nekoBox = $('neko-box'), nekoEl = $('neko'), bubble = $('bubble'), thought
 const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
 
 let ctx, master, analyser, visualizer;
+let cambiarFondo = () => {};  // pasa al siguiente preset; la define startVisualizer()
 let nextTitular = () => null, nextPensamiento = () => null; // se rellenan al cargar los JSON
 let news = [];                // [{ el, x, y, h }]
 let spawned = 0;              // noticias desde la última vez que la pantalla quedó vacía
@@ -120,6 +121,8 @@ function startVisualizer() {
     });
     setPreset(0, 0);
     $('presets').hidden = false;
+    // al limpiar la pantalla; si alguien ha fijado un preset en el menú, se respeta
+    cambiarFondo = () => { if (cycling) setPreset((current + 1) % keys.length, BLEND_SECONDS); };
 
     // El cambio de tamaño se aplica dentro del bucle, después de un render:
     // setRendererSize() falla si se llama antes del primer fotograma
@@ -217,11 +220,12 @@ function scrollDown(dy) {
         place(n);
         return true;
     });
-    if (had && !news.length) { // pantalla limpia: paran las noticias hasta que el neko se duerma (ver Neko)
+    if (had && !news.length) { // pantalla limpia: fondo nuevo y paran las noticias hasta que el neko se duerma (ver Neko)
         spawned = 0;
         clearTimeout(spawnTimer);
         premio = true;
         thoughtEl.textContent = nextPensamiento() ?? '';
+        cambiarFondo();
     }
     updateVeil();
 }
