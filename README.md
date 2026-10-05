@@ -12,18 +12,22 @@ Abrir http://localhost:8765 y tocar la pantalla (el audio necesita un toque en m
 
 ## Conectar la API
 
-En `main.js`:
+En `config.js`:
 
 - `API_URL`: la URL del endpoint. Si está vacía o falla, se usa `noticias.json`.
 - `textoDe()`: de qué campo sale el texto de cada noticia (ahora acepta `titulo` o `title`).
 
 La API tiene que devolver un array JSON y permitir CORS desde el dominio de la web.
 
-## Ajustes rápidos (`main.js`, arriba del todo)
+## Ajustes rápidos (`config.js`)
 
 - `MAX_NEWS`: cuántas noticias hacen falta para que la pantalla quede negra.
 - `MUSIC_VOLUME`, `PRESETS`, `PRESET_SECONDS`.
-- Ritmo de aparición: `spawn()`, `Math.max(600, 6000 * 0.88 ** spawned)`.
+- Ritmo: `INTRO_SECONDS`, `RUN_SECONDS`, `CALM_SECONDS`, `FIRST_GAP`, `ACCEL`, `MIN_GAP`.
+- Textos del neko: en `index.html`, dentro de `#bubble`.
+- Pensamientos del neko: `pensamientos.json`, mismo formato que `noticias.json`. Al apartar todas las noticias el neko se rasca con el pensamiento encima y bosteza (todo dentro de `THOUGHT_SECONDS`), se duerme y vuelven las noticias.
+- `neko/` tiene todos los sprites de Neko98 (correr en 8 direcciones, arañar paredes `*claw*`, lavarse `wash2`, huellas `fp_*`…), aunque no se usen todos.
+- Tocar al neko en su esquina: bocadillo de ayuda (`#msg-ayuda` en `index.html`, `HELP_SECONDS`).
 
 ## QR
 

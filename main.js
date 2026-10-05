@@ -1,28 +1,25 @@
-// Cuando exista la API del compañero: poner su URL aquí y ajustar el campo en textoDe()
-const API_URL = '';
-const FALLBACK_URL = 'noticias.json';
-const textoDe = (n) => (typeof n === 'string' ? n : n?.titulo ?? n?.title);
+// monicas: fondo generativo + música binaural que las noticias van tapando.
+//
+// Flujo: pantalla negra con el neko -> toque (arranca audio y fondo) -> el neko explica
+// -> corre a su esquina -> calma -> noticias cada vez más rápido. Si haces scroll y
+// sacas todas las noticias de la pantalla, el neko se rasca pensando, se duerme y las
+// noticias vuelven a empezar despacio.
 
-const MAX_NEWS = 25;          // con esta cantidad el velo es negro total
-const BASE_DIM = 0.35;        // oscuridad del fondo sin noticias (los presets son muy brillantes)
-const MUSIC_VOLUME = 0.6;
-const PRESETS = [             // presets tranquilos (los mismos que el reproductor de diegosanmarcos)
-    'martin - castle in the air',
-    '_Mig_085',
-    'Aderrasi - Potion of Spirits'
-];
-const PRESET_SECONDS = 25;
-const BLEND_SECONDS = 4;
+// Los ajustes (tiempos, volumen, URLs…) están en config.js, que se carga antes que este archivo.
 
 const $ = (id) => document.getElementById(id);
-const canvas = $('bg'), veilEl = $('veil'), newsEl = $('news'), nekoEl = $('neko'), startEl = $('start');
+const canvas = $('bg'), veilEl = $('veil'), newsEl = $('news'), startEl = $('start');
+const nekoBox = $('neko-box'), nekoEl = $('neko'), bubble = $('bubble'), thoughtEl = $('thought');
+const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
 
 let ctx, master, analyser, visualizer;
-let titulares = [], cola = [];
+let nextTitular = () => null, nextPensamiento = () => null; // se rellenan al cargar los JSON
 let news = [];                // [{ el, x, y, h }]
 let spawned = 0;              // noticias desde la última vez que la pantalla quedó vacía
+let spawnTimer;
+let premio = false;           // has apartado todas las noticias: el neko está en su rato de calma
 let veil = 0;                 // 0 = fondo limpio, 1 = tapado del todo
-let lastScroll = performance.now();
+let lastScroll = performance.now(); // el neko decide qué hace según el tiempo desde aquí
 
 // ===== Audio: binaural + pad + ruido, todo generado =====
 function startAudio() {
@@ -124,34 +121,47 @@ function startVisualizer() {
     setPreset(0, 0);
     $('presets').hidden = false;
 
-    addEventListener('resize', () => {
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
-        visualizer.setRendererSize(innerWidth, innerHeight);
-    });
+    // El cambio de tamaño se aplica dentro del bucle, después de un render:
+    // setRendererSize() falla si se llama antes del primer fotograma
+    let resized = false;
+    addEventListener('resize', () => { resized = true; });
     (function loop() {
-        if (veil < 1) visualizer.render(); // tapado del todo: no se ve, no gastamos batería
+        if (veil < 1) { // tapado del todo: no se ve, no gastamos batería
+            visualizer.render();
+            if (resized) {
+                resized = false;
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+                visualizer.setRendererSize(innerWidth, innerHeight);
+            }
+        }
         requestAnimationFrame(loop);
     })();
 }
 
 // ===== Noticias =====
-async function loadNews() {
-    for (const url of [API_URL, FALLBACK_URL].filter(Boolean)) {
+// Prueba las URLs en orden y devuelve los textos de la primera que funcione ([] si ninguna)
+async function loadList(...urls) {
+    for (const url of urls.filter(Boolean)) {
         try {
             const res = await fetch(url);
             if (!res.ok) throw new Error(res.status);
             const list = (await res.json()).map(textoDe).filter(Boolean);
-            if (list.length) return (titulares = list);
+            if (list.length) return list;
         } catch (err) {
-            console.warn('No se pudieron cargar noticias de', url, err.message);
+            console.warn('No se pudo cargar', url, err.message);
         }
     }
+    return [];
 }
 
-function nextTitular() {
-    if (!cola.length) cola = [...titulares].sort(() => Math.random() - 0.5);
-    return cola.pop();
+// Devuelve una función que saca los textos en orden aleatorio sin repetir hasta agotarlos
+function baraja(list) {
+    let cola = [];
+    return () => {
+        if (!cola.length) cola = [...list].sort(() => Math.random() - 0.5);
+        return cola.pop() ?? null;
+    };
 }
 
 function place(n) {
@@ -159,10 +169,11 @@ function place(n) {
 }
 
 function spawn() {
-    if (titulares.length && !document.hidden) {
+    const texto = !document.hidden && nextTitular();
+    if (texto) {
         const el = document.createElement('p');
         el.className = 'noticia';
-        el.textContent = nextTitular();
+        el.textContent = texto;
         newsEl.append(el);
         const h = el.offsetHeight;
         const n = {
@@ -177,8 +188,13 @@ function spawn() {
         spawned++;
         updateVeil();
     }
-    // Cada vez más rápido: 6 s la primera, hasta 0,6 s
-    setTimeout(spawn, Math.max(600, 6000 * 0.88 ** spawned));
+    // Cada vez más rápido (si no se añadió ninguna, se reintenta con el mismo hueco)
+    scheduleSpawn(Math.max(MIN_GAP, FIRST_GAP * ACCEL ** Math.max(0, spawned - 1)));
+}
+
+function scheduleSpawn(seconds) {
+    clearTimeout(spawnTimer);
+    spawnTimer = setTimeout(spawn, seconds * 1000);
 }
 
 function updateVeil() {
@@ -191,6 +207,7 @@ function updateVeil() {
 function scrollDown(dy) {
     if (dy <= 0) return;
     lastScroll = performance.now();
+    const had = news.length;
     news = news.filter((n) => {
         n.y -= dy;
         if (n.y + n.h < 0) {
@@ -200,7 +217,12 @@ function scrollDown(dy) {
         place(n);
         return true;
     });
-    if (!news.length) spawned = 0;
+    if (had && !news.length) { // pantalla limpia: paran las noticias hasta que el neko se duerma (ver Neko)
+        spawned = 0;
+        clearTimeout(spawnTimer);
+        premio = true;
+        thoughtEl.textContent = nextPensamiento() ?? '';
+    }
     updateVeil();
 }
 
@@ -219,21 +241,77 @@ addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 // ===== Neko =====
-['Down1', 'down2', 'yawn2', 'sleep1', 'sleep2'].forEach((s) => { new Image().src = `neko/${s}.ico`; }); // precarga
-let tick = 0;
+// Modos: 'intro' quieto en el centro hablando · 'run' corre a su esquina · 'free' reacciona al scroll.
+// En 'free' el sprite depende de cuánto hace que paraste de hacer scroll (idle):
+//   normal: corre (mientras haces scroll) -> despierto -> bosteza -> duerme
+//   premio: corre -> se rasca con el pensamiento encima -> bosteza -> duerme y vuelven las noticias
+const RUN_MS = 150;           // sigue corriendo un poco tras el último scroll (llega a saltos)
+const AWAKE_MS = 4000;        // despierto antes de bostezar
+const YAWN_MS = 1500;         // lo que dura un bostezo
+let nekoMode = 'intro';
+let tick = 0;                 // sube cada 120 ms: marca el paso de las animaciones
+
+// precarga, para que no parpadee al cambiar de sprite
+['Awake', 'Down1', 'down2', 'scratch1', 'scratch2', 'yawn2', 'yawn3', 'sleep1', 'sleep2']
+    .forEach((s) => { new Image().src = `neko/${s}.ico`; });
+
+// alterna dos fotogramas, cambiando cada `cada` ticks
+const anda = (a, b, cada = 1) => (Math.floor(tick / cada) % 2 ? a : b);
+// bostezo en tres tiempos: cierra los ojos, abre la boca, cierra los ojos (ms = tiempo dentro del bostezo)
+const bostezo = (ms) => (ms > YAWN_MS / 3 && ms < YAWN_MS * 2 / 3 ? 'yawn3' : 'yawn2');
+
+function nekoSprite(idle) {
+    const yawnAt = THOUGHT_SECONDS * 1000 - YAWN_MS; // en el premio, el bostezo cierra el pensamiento
+    if (nekoMode === 'intro') return 'Awake';
+    if (nekoMode === 'run' || idle < RUN_MS) return anda('Down1', 'down2');
+    if (premio) return idle < yawnAt ? anda('scratch1', 'scratch2') : bostezo(idle - yawnAt);
+    if (idle < AWAKE_MS) return 'Awake';
+    if (idle < AWAKE_MS + YAWN_MS) return bostezo(idle - AWAKE_MS);
+    return anda('sleep1', 'sleep2', 5);
+}
+
 setInterval(() => {
     tick++;
     const idle = performance.now() - lastScroll;
-    let s;
-    if (idle < 150) s = tick % 2 ? 'Down1' : 'down2';
-    else if (idle < 4000) s = 'Awake';
-    else if (idle < 5500) s = 'yawn2';
-    else s = Math.floor(tick / 5) % 2 ? 'sleep1' : 'sleep2';
+    if (premio && idle >= THOUGHT_SECONDS * 1000) { // se ha dormido: fin de la calma, vuelven las noticias
+        premio = false;
+        scheduleSpawn(0);
+    }
+    thoughtEl.classList.toggle('hidden', !(premio && idle >= RUN_MS && thoughtEl.textContent));
+    const s = nekoSprite(idle);
     if (nekoEl.dataset.s !== s) {
         nekoEl.dataset.s = s;
         nekoEl.src = `neko/${s}.ico`;
     }
 }, 120);
+
+// El neko explica, se calla y corre a su esquina. Tocarlo (o al bocadillo) se salta la explicación
+async function nekoIntro() {
+    $('msg-hola').hidden = true;
+    $('msg-instrucciones').hidden = false;
+    nekoBox.style.pointerEvents = 'auto';
+    await Promise.race([wait(INTRO_SECONDS), new Promise((r) => nekoBox.addEventListener('click', r, { once: true }))]);
+    nekoBox.style.pointerEvents = '';
+    bubble.classList.add('hidden');
+    nekoMode = 'run';
+    nekoBox.style.transition = `transform ${RUN_SECONDS}s ease-in-out`;
+    nekoBox.classList.remove('intro');
+    await wait(RUN_SECONDS);
+    nekoMode = 'free';
+    lastScroll = performance.now() - AWAKE_MS; // llega cansado: bosteza enseguida y se duerme
+}
+
+// En su esquina: tocarlo lo despierta y recuerda cómo navegar (no interrumpe su rato de calma)
+let helpTimer;
+nekoEl.addEventListener('click', () => {
+    if (nekoMode !== 'free' || premio) return;
+    lastScroll = performance.now() - RUN_MS; // despierto, sin pasar por la animación de correr
+    $('msg-instrucciones').hidden = true;
+    $('msg-ayuda').hidden = false;
+    bubble.classList.remove('hidden');
+    clearTimeout(helpTimer);
+    helpTimer = setTimeout(() => bubble.classList.add('hidden'), HELP_SECONDS * 1000);
+});
 
 // Pestaña oculta o móvil bloqueado: silencio (y spawn() no añade noticias)
 document.addEventListener('visibilitychange', () => {
@@ -247,6 +325,12 @@ startEl.addEventListener('click', async () => {
     await ctx.resume();
     updateVeil();
     startVisualizer();
-    await loadNews();
-    setTimeout(spawn, 4000); // unos segundos de calma antes de la primera noticia
+    // las listas se cargan mientras habla el neko
+    const loading = Promise.all([
+        loadList(API_URL, FALLBACK_URL).then((l) => { nextTitular = baraja(l); }),
+        loadList(PENSAMIENTOS_URL).then((l) => { nextPensamiento = baraja(l); })
+    ]);
+    await nekoIntro();
+    await loading;
+    scheduleSpawn(CALM_SECONDS);
 }, { once: true });

@@ -14,24 +14,32 @@
     <canvas id="bg"></canvas>
     <div id="veil"></div>
     <div id="news" aria-live="polite"></div>
-    <img id="neko" src="neko/Awake.ico" alt="">
     <!-- el select va invisible encima del texto: iOS no deja alinear el texto de un select -->
     <label id="presets" hidden>
         <span id="preset-name"></span>
         <select id="preset" aria-label="preset del fondo"></select>
     </label>
 
-    <button id="start" type="button">
-        <strong>bienvenide</strong>
-        <span>click/toca la pantalla para entrar</span>
-        <small>usa auriculares</small>
-    </button>
+    <!-- pantalla negra de entrada: el toque es obligatorio para que suene el audio en móvil -->
+    <button id="start" type="button" aria-label="entrar"></button>
+
+    <!-- el neko empieza en el centro diciendo las instrucciones y luego corre a su esquina -->
+    <div id="neko-box" class="intro">
+        <div id="bubble" aria-live="polite">
+            <p id="msg-hola"><strong>bienvenide</strong><br>toca la pantalla para entrar<br><small>con auriculares, mejor</small></p>
+            <p id="msg-instrucciones" hidden>van a llegar noticias, cada vez más deprisa.<br>haz scroll hacia abajo para apartarlas y que vuelva la calma.<br><small>yo me voy a dormir ahí abajo</small></p>
+            <p id="msg-ayuda" hidden>haz scroll hacia abajo<br>para apartar las noticias</p>
+        </div>
+        <p id="thought" class="hidden" aria-live="polite"></p>
+        <img id="neko" src="neko/Awake.ico" alt="">
+    </div>
 
     <script src="vendor/butterchurn-presets/base.min.js" defer></script>
     <script type="module">
         import butterchurn from './vendor/butterchurn/butterchurn.js';
         window.butterchurn = butterchurn;
     </script>
+    <script src="config.js" defer></script>
     <script src="main.js" defer></script>
 </body>
 </html>

@@ -42,15 +42,87 @@ html, body {
 }
 .noticia.visible { opacity: 1; }
 
-#neko {
+/* Neko + bocadillo. En su sitio: abajo a la izquierda. Con .intro: en el centro de la pantalla
+   (64px de caja con 16px de margen -> su centro está a 48px del borde) */
+#neko-box {
     position: fixed;
     left: 16px;
     bottom: calc(16px + env(safe-area-inset-bottom));
     width: 64px;
     height: 64px;
-    image-rendering: pixelated;
-    pointer-events: none;
+    z-index: 2; /* por encima de #start */
+    pointer-events: none; /* main.js lo activa mientras explica, para poder saltarlo */
+    cursor: pointer;
 }
+#neko-box.intro {
+    transform: translate(calc(50vw - 48px), calc(48px + env(safe-area-inset-bottom) - 40dvh));
+}
+#neko-box:not(.intro) #neko { pointer-events: auto; } /* en su esquina se puede tocar */
+#neko {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+}
+
+#bubble {
+    position: absolute;
+    bottom: calc(100% + 14px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: min(80vw, 320px);
+    padding: .8rem 1.1rem;
+    border-radius: 14px;
+    background: #fff;
+    color: #000;
+    font-size: 1.05rem;
+    line-height: 1.4;
+    text-align: center;
+    transition: opacity .6s ease;
+}
+#bubble::after { /* el piquito hacia el neko */
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -8px;
+    border: 8px solid transparent;
+    border-top-color: #fff;
+}
+#bubble p { margin: 0; }
+#bubble strong { font-size: 1.4rem; font-weight: 400; }
+#bubble small { font-size: .85rem; opacity: .6; }
+#bubble.hidden { opacity: 0; }
+/* en su esquina el bocadillo sale hacia la derecha, con el piquito sobre el neko */
+#neko-box:not(.intro) #bubble { left: 0; transform: none; }
+#neko-box:not(.intro) #bubble::after { left: 32px; }
+
+/* Bocadillo de pensar: nube encima del neko en su esquina, con dos burbujitas hacia él */
+#thought {
+    position: absolute;
+    bottom: calc(100% + 26px);
+    left: 0;
+    width: max-content;
+    max-width: min(75vw, 300px);
+    margin: 0;
+    padding: .8rem 1.1rem;
+    border-radius: 24px;
+    background: #fff;
+    color: #000;
+    font-size: .95rem;
+    line-height: 1.35;
+    transition: opacity .8s ease;
+}
+#thought::before, #thought::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+}
+#thought::before { width: 12px; height: 12px; top: calc(100% + 4px); left: 30px; }
+#thought::after { width: 7px; height: 7px; top: calc(100% + 18px); left: 24px; }
+#thought.hidden { opacity: 0; }
 
 #presets {
     position: fixed;
@@ -77,19 +149,10 @@ html, body {
 #start {
     position: fixed;
     inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: .5rem;
+    z-index: 1;
     border: 0;
     background: #000;
-    color: #fff;
-    font: inherit;
-    font-size: 1.1rem;
     cursor: pointer;
     transition: opacity 1.5s ease;
 }
-#start strong { font-size: 2rem; font-weight: 400; margin-bottom: .5rem; }
-#start small { font-size: .9rem; opacity: .6; }
 #start.hidden { opacity: 0; pointer-events: none; }
