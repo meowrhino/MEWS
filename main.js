@@ -160,10 +160,18 @@ async function loadList(...urls) {
 
 // Devuelve una función que saca los textos en orden aleatorio sin repetir hasta agotarlos
 function baraja(list) {
-    let cola = [];
+    let cola = [], ultimo = null;
     return () => {
-        if (!cola.length) cola = [...list].sort(() => Math.random() - 0.5);
-        return cola.pop() ?? null;
+        if (!cola.length) {
+            cola = [...list];
+            for (let i = cola.length - 1; i > 0; i--) { // Fisher-Yates: todas las órdenes igual de probables
+                const j = Math.floor(Math.random() * (i + 1));
+                [cola[i], cola[j]] = [cola[j], cola[i]];
+            }
+            // la primera en salir (la del final) no puede ser la última de la vuelta anterior
+            if (cola.length > 1 && cola.at(-1) === ultimo) [cola[0], cola[cola.length - 1]] = [cola.at(-1), cola[0]];
+        }
+        return (ultimo = cola.pop() ?? null);
     };
 }
 
