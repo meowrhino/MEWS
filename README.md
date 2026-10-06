@@ -33,11 +33,11 @@ La API tiene que devolver un array JSON y permitir CORS desde el dominio de la w
 
 ## /mews
 
-- `mews/`: solo el fondo (sin música: Butterchurn recibe una onda inventada) y el neko en el centro diciendo «MEWS!». https://meowrhino.github.io/monicas_1/mews/
+- `mews/`: solo el fondo (sin música: Butterchurn recibe una onda inventada) y el neko en el centro diciendo «MEWS!». https://meowrhino.github.io/MEWS/mews/
 
 ## QR
 
-- `qr/qr-neko.svg`: QR listo para imprimir, con la cabeza del neko (`neko/Awake.ico`) en el centro. Se ve en `/qr/` (https://meowrhino.github.io/monicas_1/qr/).
+- `qr/qr-neko.svg`: QR listo para imprimir, con la cabeza del neko (`neko/Awake.ico`) en el centro. Se ve en `/qr/` (https://meowrhino.github.io/MEWS/qr/).
 - Para regenerarlo (comprueba que se lee antes de guardarlo):
 
 ```bash

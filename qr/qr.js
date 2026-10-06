@@ -4,7 +4,7 @@
 const fs = require('fs'), path = require('path');
 const qrcode = require('../vendor/qr/qrcode.js'), jsQR = require('../vendor/qr/jsQR.js');
 
-const QR_URL = 'https://meowrhino.github.io/monicas_1/';
+const QR_URL = 'https://meowrhino.github.io/MEWS/';
 const QUIET = 4; // margen blanco obligatorio alrededor del QR, en módulos
 const CABEZA = { x: 9, y: 3, w: 15, h: 15 }; // recorte de la cabeza dentro del sprite de 32x32
 
