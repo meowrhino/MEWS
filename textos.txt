@@ -1,0 +1,16 @@
+TEXTOS PARA «sobre MEWS!»
+(el que se ve en la web está en index.html, dentro de #about)
+
+
+TEXTO 1 (tres párrafos)
+
+MEWS! es una pieza que reflexiona sobre el scroll infinito, la economía de la atención, la saturación de contenidos en nuestras pantallas y el bombardeo y la censura de contenidos, a través de una interfaz que contrapone una invitación al descanso y a la pausa con la saturación de contenidos. Una promesa inicial de calma es interrumpida por una serie de noticias que emergen en la pantalla y modifican nuestra interacción y relación con el contenido, haciendo visible la falta de agencia sobre los contenidos de las plataformas de las big tech.
+
+Exploramos la relación entre el scroll, la atención y el contenido: ¿cuánto control tenemos realmente sobre aquello que vemos?
+
+Existe una paradoja en las plataformas de contenidos digitales: aquello que no vemos y aquello que no podemos dejar de ver forman parte de una sofisticada infraestructura de atención y de captura de datos que habitamos y de la que es muy difícil escapar. A la vez que es un gesto imposible, la única interacción posible es un scroll infinito del que no podemos salir.
+
+
+TEXTO 2 (un párrafo)
+
+MEWS! es una pieza sobre el scroll infinito, la economía de la atención y el bombardeo y la censura de contenidos en nuestras pantallas. Una promesa inicial de calma es interrumpida por noticias que emergen cada vez más deprisa y cambian nuestra relación con lo que vemos, haciendo visible la falta de agencia en las plataformas de las big tech. Aquello que no vemos y aquello que no podemos dejar de ver forman parte de una misma infraestructura de atención y de captura de datos de la que es muy difícil escapar: la única interacción posible es un scroll infinito del que no podemos salir. ¿Cuánto control tenemos realmente sobre aquello que vemos?
