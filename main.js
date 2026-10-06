@@ -237,7 +237,8 @@ addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 // ===== Neko =====
-// Modos: 'intro' quieto en el centro hablando · 'run' corre a su esquina · 'free' reacciona al scroll.
+// Modos: 'intro' quieto en el centro hablando · 'run' corre a su esquina · 'free' reacciona al scroll
+// · 'ida' / 'centro' / 'vuelta' con «sobre MEWS!»: corre al centro, habla y vuelve a su esquina.
 // En 'free' el sprite depende de cuánto hace que paraste de hacer scroll (idle):
 //   normal: corre (mientras haces scroll) -> despierto -> bosteza -> duerme
 //   premio: corre -> se rasca con el pensamiento encima -> bosteza -> duerme y vuelven las noticias
@@ -248,7 +249,7 @@ let nekoMode = 'intro';
 let tick = 0;                 // sube cada 120 ms: marca el paso de las animaciones
 
 // precarga, para que no parpadee al cambiar de sprite
-['Awake', 'Down1', 'down2', 'scratch1', 'scratch2', 'yawn2', 'yawn3', 'sleep1', 'sleep2']
+['Awake', 'Down1', 'down2', 'Right1', 'right2', 'left1', 'left2', 'scratch1', 'scratch2', 'yawn2', 'yawn3', 'sleep1', 'sleep2']
     .forEach((s) => { new Image().src = `neko/${s}.ico`; });
 
 // alterna dos fotogramas, cambiando cada `cada` ticks
@@ -258,7 +259,9 @@ const bostezo = (ms) => (ms > YAWN_MS / 3 && ms < YAWN_MS * 2 / 3 ? 'yawn3' : 'y
 
 function nekoSprite(idle) {
     const yawnAt = THOUGHT_SECONDS * 1000 - YAWN_MS; // en el premio, el bostezo cierra el pensamiento
-    if (nekoMode === 'intro' || about.open) return 'Awake'; // con "sobre MEWS!" abierto está hablando
+    if (nekoMode === 'intro' || nekoMode === 'centro') return 'Awake';
+    if (nekoMode === 'ida') return anda('Right1', 'right2');
+    if (nekoMode === 'vuelta') return anda('left1', 'left2');
     if (nekoMode === 'run' || idle < RUN_MS) return anda('Down1', 'down2');
     if (premio) return idle < yawnAt ? anda('scratch1', 'scratch2') : bostezo(idle - yawnAt);
     if (idle < AWAKE_MS) return 'Awake';
@@ -273,7 +276,7 @@ setInterval(() => {
         premio = false;
         scheduleSpawn(0);
     }
-    thoughtEl.classList.toggle('hidden', !(premio && idle >= RUN_MS && thoughtEl.textContent));
+    thoughtEl.classList.toggle('hidden', !(premio && nekoMode === 'free' && idle >= RUN_MS && thoughtEl.textContent));
     const s = nekoSprite(idle);
     if (nekoEl.dataset.s !== s) {
         nekoEl.dataset.s = s;
@@ -310,13 +313,42 @@ nekoEl.addEventListener('click', () => {
     helpTimer = setTimeout(() => bubble.classList.add('hidden'), HELP_SECONDS * 1000);
 });
 
-// "sobre MEWS!": el bocadillo grande. Tocar fuera también lo cierra (el clic llega al propio <dialog>)
-$('about-btn').addEventListener('click', () => {
+// "sobre MEWS!": el neko corre al centro y al llegar abre el bocadillo grande; el botón pasa a "cerrar".
+// Se cierra con ese botón, con Esc o tocando fuera del bocadillo, y el neko vuelve corriendo a su esquina
+const aboutBtn = $('about-btn');
+let paseo = 0; // sube en cada ida o vuelta: si llega tarde un paseo viejo, no hace nada
+const sobreAbierto = () => nekoBox.classList.contains('centro');
+
+async function abrirSobre() {
+    const yo = ++paseo;
+    aboutBtn.textContent = 'cerrar';
+    aboutBtn.setAttribute('aria-expanded', 'true');
     bubble.classList.add('hidden');
-    about.showModal();
+    nekoMode = 'ida';
+    nekoBox.classList.add('centro');
+    await wait(RUN_SECONDS);
+    if (yo !== paseo) return;
+    nekoMode = 'centro';
+    about.show();
     $('about-text').scrollTop = 0; // siempre desde el principio, no donde se dejó la última vez
+}
+
+async function cerrarSobre() {
+    const yo = ++paseo;
+    aboutBtn.textContent = 'sobre MEWS!';
+    aboutBtn.setAttribute('aria-expanded', 'false');
+    about.close();
+    nekoMode = 'vuelta';
+    nekoBox.classList.remove('centro');
+    await wait(RUN_SECONDS);
+    if (yo === paseo) nekoMode = 'free';
+}
+
+aboutBtn.addEventListener('click', () => (sobreAbierto() ? cerrarSobre() : abrirSobre()));
+addEventListener('click', (e) => {
+    if (sobreAbierto() && e.target !== aboutBtn && !about.contains(e.target)) cerrarSobre();
 });
-about.addEventListener('click', (e) => { if (e.target === about) about.close(); });
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && sobreAbierto()) cerrarSobre(); });
 
 // Pestaña oculta o móvil bloqueado: silencio (y spawn() no añade noticias)
 document.addEventListener('visibilitychange', () => {

@@ -7,16 +7,16 @@
     <title>MEWS!</title>
     <link rel="icon" href="neko/Awake.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Inter:wght@400&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <canvas id="bg"></canvas>
     <div id="veil"></div>
     <div id="news" aria-live="polite"></div>
-    <button id="about-btn" type="button" hidden>sobre MEWS!</button>
+    <button id="about-btn" type="button" aria-controls="about" aria-expanded="false" hidden>sobre MEWS!</button>
 
-    <!-- "sobre MEWS!": un bocadillo grande del neko. Se cierra con el botón, con Esc o tocando fuera -->
+    <!-- "sobre MEWS!": bocadillo grande del neko en el centro. Se cierra con el mismo botón, con Esc o tocando fuera -->
     <dialog id="about" aria-label="sobre MEWS!">
         <div id="about-text" tabindex="-1" autofocus>
             <p><strong>sobre MEWS!</strong></p>
@@ -26,7 +26,6 @@
             <p>Fondos: <a href="https://github.com/jberg/butterchurn" target="_blank" rel="noopener">Butterchurn</a>, de Jordan Berg (licencia MIT), versión web de MilkDrop, de Ryan Geiss. Presets de <a href="https://github.com/jberg/butterchurn-presets" target="_blank" rel="noopener">butterchurn-presets</a> (MIT), cada uno de su autor.<br><small>fondo de ahora: <span id="preset-name"></span></small></p>
             <p>Neko: sprites de <a href="https://github.com/leiqunni/Neko98" target="_blank" rel="noopener">Neko98</a>, de David Harvey. Neko original de Masayuki Koba.</p>
         </div>
-        <form method="dialog"><button>cerrar</button></form>
     </dialog>
 
     <!-- pantalla negra de entrada: el toque es obligatorio para que suene el audio en móvil -->
