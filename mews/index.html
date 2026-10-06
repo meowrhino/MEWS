@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#000">
+    <title>MEWS!</title>
+    <link rel="icon" href="../neko/Awake.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&display=swap">
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <!-- solo el fondo y el neko en el centro: sin noticias ni música -->
+    <canvas id="bg"></canvas>
+    <div id="neko-box" class="intro">
+        <div id="bubble"><p><strong>MEWS!</strong></p></div>
+        <img id="neko" src="../neko/Awake.ico" alt="">
+    </div>
+
+    <script src="../vendor/butterchurn-presets/base.min.js"></script>
+    <script src="../config.js"></script>
+    <script type="module">
+        import butterchurn from '../vendor/butterchurn/butterchurn.js';
+        const canvas = document.getElementById('bg');
+        const all = window.base.default, keys = Object.keys(all);
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        const viz = butterchurn.createVisualizer(new AudioContext(), canvas, { width: innerWidth, height: innerHeight, pixelRatio: 1, textureRatio: 1 });
+        const cambiar = (blend) => viz.loadPreset(all[keys[Math.floor(Math.random() * keys.length)]], blend);
+        cambiar(0);
+        setInterval(() => cambiar(BLEND_SECONDS), PRESET_SECONDS * 1000);
+        // sin sonido los presets se quedan en negro: les damos una onda inventada (1024 muestras, 128 = silencio)
+        const onda = new Uint8Array(1024);
+        let resized = false;
+        addEventListener('resize', () => { resized = true; });
+        (function loop(t) {
+            const vol = 40 + 30 * Math.sin(t / 1300);
+            for (let i = 0; i < onda.length; i++) onda[i] = 128 + vol * Math.sin(i / 9 + t / 200) * Math.sin(i / 70) + (Math.random() - 0.5) * 20;
+            viz.render({ audioLevels: { timeByteArray: onda, timeByteArrayL: onda, timeByteArrayR: onda } });
+            if (resized) { // después de un render: antes del primer fotograma falla
+                resized = false;
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+                viz.setRendererSize(innerWidth, innerHeight);
+            }
+            requestAnimationFrame(loop);
+        })(0);
+    </script>
+</body>
+</html>

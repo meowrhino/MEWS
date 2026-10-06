@@ -31,17 +31,20 @@ La API tiene que devolver un array JSON y permitir CORS desde el dominio de la w
 - `neko/` tiene todos los sprites de Neko98 (correr en 8 direcciones, arañar paredes `*claw*`, lavarse `wash2`, huellas `fp_*`…), aunque no se usen todos.
 - Tocar al neko en su esquina: bocadillo de ayuda (`#msg-ayuda` en `index.html`, `HELP_SECONDS`).
 
+## /mews
+
+- `mews/`: solo el fondo (sin música: Butterchurn recibe una onda inventada) y el neko en el centro diciendo «MEWS!». https://meowrhino.github.io/monicas_1/mews/
+
 ## QR
 
-- `qr/qr-gato.svg` y `qr/qr-neko.svg`: QR listos para imprimir, con un dibujo pixel art en el centro.
-- Hacedor visual: abrir `/qr/` (https://meowrhino.github.io/monicas_1/qr/). Puedes cambiar la URL, los colores y editar el dibujo. Te dice si el QR se sigue leyendo y lo descarga en PNG o SVG.
-- Para regenerar los SVG desde la terminal (comprueba que se leen antes de guardarlos):
+- `qr/qr-neko.svg`: QR listo para imprimir, con la cabeza del neko (`neko/Awake.ico`) en el centro. Se ve en `/qr/` (https://meowrhino.github.io/monicas_1/qr/).
+- Para regenerarlo (comprueba que se lee antes de guardarlo):
 
 ```bash
 node qr/qr.js
 ```
 
-Los dibujos están en `DIBUJOS`, en `qr/qr.js`. Usa `.` para blanco, `#` para tinta, `o` para el color y `p` para rosa.
+La URL está en `QR_URL` y el recorte de la cabeza en `CABEZA`, en `qr/qr.js`.
 
 ## Créditos
 
