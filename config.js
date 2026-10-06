@@ -3,7 +3,7 @@
 
 // ----- Ritmo (en segundos) -----
 // toca -> INTRO -> RUN -> CALM -> 1ª noticia -> FIRST_GAP -> 2ª -> FIRST_GAP·ACCEL -> 3ª -> ...
-const INTRO_SECONDS = 7;      // lo que el neko tarda en explicar antes de irse
+const INTRO_SECONDS = 5;      // lo que el neko tarda en explicar antes de irse
 const RUN_SECONDS = 1.6;      // lo que tarda en correr del centro a su esquina
 const CALM_SECONDS = 3;       // calma desde que llega a su esquina hasta la 1ª noticia
 const FIRST_GAP = 2;          // segundos entre la 1ª y la 2ª noticia
