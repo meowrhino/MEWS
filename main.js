@@ -237,15 +237,17 @@ addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 // ===== Neko =====
-// Modos: 'intro' quieto en el centro hablando · 'run' corre a su esquina · 'free' reacciona al scroll
-// · 'ida' / 'centro' / 'vuelta' con «sobre MEWS!»: corre al centro, habla y vuelve a su esquina.
+// Modos: 'quieto' de pie, despierto (hablando en el centro o callándose antes de correr)
+// · 'run' corre a su esquina · 'free' reacciona al scroll
+// · 'ida' / 'vuelta' con «sobre MEWS!»: corre al centro y vuelve a su esquina.
 // En 'free' el sprite depende de cuánto hace que paraste de hacer scroll (idle):
 //   normal: corre (mientras haces scroll) -> despierto -> bosteza -> duerme
 //   premio: corre -> se rasca con el pensamiento encima -> bosteza -> duerme y vuelven las noticias
 const RUN_MS = 150;           // sigue corriendo un poco tras el último scroll (llega a saltos)
 const AWAKE_MS = 4000;        // despierto antes de bostezar
 const YAWN_MS = 1500;         // lo que dura un bostezo
-let nekoMode = 'intro';
+const FADE_SECONDS = 0.6;     // lo que tardan los bocadillos en aparecer o irse (igual que en style.css)
+let nekoMode = 'quieto';
 let tick = 0;                 // sube cada 120 ms: marca el paso de las animaciones
 
 // precarga, para que no parpadee al cambiar de sprite
@@ -259,7 +261,7 @@ const bostezo = (ms) => (ms > YAWN_MS / 3 && ms < YAWN_MS * 2 / 3 ? 'yawn3' : 'y
 
 function nekoSprite(idle) {
     const yawnAt = THOUGHT_SECONDS * 1000 - YAWN_MS; // en el premio, el bostezo cierra el pensamiento
-    if (nekoMode === 'intro' || nekoMode === 'centro') return 'Awake';
+    if (nekoMode === 'quieto') return 'Awake';
     if (nekoMode === 'ida') return anda('Right1', 'right2');
     if (nekoMode === 'vuelta') return anda('left1', 'left2');
     if (nekoMode === 'run' || idle < RUN_MS) return anda('Down1', 'down2');
@@ -284,6 +286,14 @@ setInterval(() => {
     }
 }, 120);
 
+// Antes de moverse, el neko se calla: se van los bocadillos y espera a que acaben de irse
+function callar() {
+    const hablando = [bubble, thoughtEl].some((el) => !el.classList.contains('hidden'));
+    bubble.classList.add('hidden');
+    thoughtEl.classList.add('hidden');
+    return wait(hablando ? FADE_SECONDS : 0);
+}
+
 // El neko explica, se calla y corre a su esquina. Tocarlo (o al bocadillo) se salta la explicación
 async function nekoIntro() {
     $('msg-hola').hidden = true;
@@ -291,7 +301,7 @@ async function nekoIntro() {
     nekoBox.style.pointerEvents = 'auto';
     await Promise.race([wait(INTRO_SECONDS), new Promise((r) => nekoBox.addEventListener('click', r, { once: true }))]);
     nekoBox.style.pointerEvents = '';
-    bubble.classList.add('hidden');
+    await callar();
     nekoMode = 'run';
     nekoBox.style.transition = `transform ${RUN_SECONDS}s ease-in-out`;
     nekoBox.classList.remove('intro');
@@ -313,30 +323,41 @@ nekoEl.addEventListener('click', () => {
     helpTimer = setTimeout(() => bubble.classList.add('hidden'), HELP_SECONDS * 1000);
 });
 
-// "sobre MEWS!": el neko corre al centro y al llegar abre el bocadillo grande; el botón pasa a "cerrar".
-// Se cierra con ese botón, con Esc o tocando fuera del bocadillo, y el neko vuelve corriendo a su esquina
+// "sobre MEWS!": el neko se calla, corre al centro y al llegar abre el bocadillo grande; el botón pasa a "cerrar".
+// Se cierra con ese botón, con Esc o tocando fuera del bocadillo: el bocadillo se va y luego el neko vuelve a su esquina
 const aboutBtn = $('about-btn');
-let paseo = 0; // sube en cada ida o vuelta: si llega tarde un paseo viejo, no hace nada
-const sobreAbierto = () => nekoBox.classList.contains('centro');
+let paseo = 0; // sube en cada ida o vuelta: si un paseo viejo termina una espera, ya no hace nada
+const sobreAbierto = () => aboutBtn.getAttribute('aria-expanded') === 'true';
 
 async function abrirSobre() {
     const yo = ++paseo;
     aboutBtn.textContent = 'cerrar';
     aboutBtn.setAttribute('aria-expanded', 'true');
-    bubble.classList.add('hidden');
-    nekoMode = 'ida';
-    nekoBox.classList.add('centro');
-    await wait(RUN_SECONDS);
-    if (yo !== paseo) return;
-    nekoMode = 'centro';
-    about.show();
-    $('about-text').scrollTop = 0; // siempre desde el principio, no donde se dejó la última vez
+    if (!nekoBox.classList.contains('centro')) { // si estaba cerrándose, ya está en el centro
+        nekoMode = 'quieto';
+        await callar();
+        if (yo !== paseo) return;
+        nekoMode = 'ida';
+        nekoBox.classList.add('centro');
+        await wait(RUN_SECONDS);
+        if (yo !== paseo) return;
+    }
+    nekoMode = 'quieto';
+    if (!about.open) {
+        about.show();
+        $('about-text').scrollTop = 0; // siempre desde el principio, no donde se dejó la última vez
+    }
+    about.offsetWidth; // aplica el estado oculto antes de quitarlo, para que haga el fundido
+    about.classList.remove('hidden');
 }
 
 async function cerrarSobre() {
     const yo = ++paseo;
     aboutBtn.textContent = 'sobre MEWS!';
     aboutBtn.setAttribute('aria-expanded', 'false');
+    about.classList.add('hidden');
+    await wait(FADE_SECONDS);
+    if (yo !== paseo) return;
     about.close();
     nekoMode = 'vuelta';
     nekoBox.classList.remove('centro');
