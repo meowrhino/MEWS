@@ -1,4 +1,4 @@
-// monicas: fondo generativo + música binaural que las noticias van tapando.
+// MEWS!: fondo generativo + música binaural que las noticias van tapando.
 //
 // Flujo: pantalla negra con el neko -> toque (arranca audio y fondo) -> el neko explica
 // -> corre a su esquina -> calma -> noticias cada vez más rápido. Si haces scroll y
@@ -10,10 +10,11 @@
 const $ = (id) => document.getElementById(id);
 const canvas = $('bg'), veilEl = $('veil'), newsEl = $('news'), startEl = $('start');
 const nekoBox = $('neko-box'), nekoEl = $('neko'), bubble = $('bubble'), thoughtEl = $('thought');
+const about = $('about');
 const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
 
 let ctx, master, analyser, visualizer;
-let cambiarFondo = () => {};  // pasa al siguiente preset; la define startVisualizer()
+let cambiarFondo = () => {};  // pasa a otro preset al azar; la define startVisualizer()
 let nextTitular = () => null, nextPensamiento = () => null; // se rellenan al cargar los JSON
 let news = [];                // [{ el, x, y, h }]
 let spawned = 0;              // noticias desde la última vez que la pantalla quedó vacía
@@ -81,8 +82,7 @@ function startAudio() {
 function startVisualizer() {
     if (!window.butterchurn || !window.base) return console.warn('butterchurn no cargado');
     const all = window.base.default;
-    // Los tranquilos primero, luego el resto del pack
-    const keys = [...new Set([...PRESETS.filter((k) => all[k]), ...Object.keys(all)])];
+    const nextPreset = baraja(Object.keys(all)); // todos los del pack base, al azar
 
     const w = innerWidth, h = innerHeight;
     canvas.width = w;
@@ -94,35 +94,16 @@ function startVisualizer() {
     }
     visualizer.connectAudio(analyser);
 
-    // Desplegable abajo a la derecha: primera opción = ciclar sí/no, luego los presets
-    const select = $('preset'), label = $('preset-name');
-    const cycleOpt = new Option('', 'cycle');
-    const group = document.createElement('optgroup');
-    group.label = 'presets';
-    group.append(...keys.map((k, i) => new Option(k, i)));
-    select.append(cycleOpt, group);
-    let cycling = true, current = 0, timer;
-    const setPreset = (i, blend) => {
-        current = i;
-        select.value = i;
-        label.textContent = `${cycling ? '⟳' : '‖'} ${keys[i]}`;
-        cycleOpt.text = cycling ? '⟳ ciclando (tocar para fijar)' : '‖ fijo (tocar para ciclar)';
-        visualizer.loadPreset(all[keys[i]], blend);
-        clearInterval(timer);
-        if (cycling) timer = setInterval(() => setPreset((current + 1) % keys.length, BLEND_SECONDS), PRESET_SECONDS * 1000);
+    // Cambia solo cada PRESET_SECONDS y al limpiar la pantalla (y entonces vuelve a contar)
+    let timer;
+    cambiarFondo = (blend = BLEND_SECONDS) => {
+        const k = nextPreset();
+        $('preset-name').textContent = k; // el nombre lleva el autor: sale en los créditos
+        visualizer.loadPreset(all[k], blend);
+        clearTimeout(timer);
+        timer = setTimeout(cambiarFondo, PRESET_SECONDS * 1000);
     };
-    select.addEventListener('change', () => {
-        if (select.value === 'cycle') {
-            cycling = !cycling;
-            setPreset(current, 0);
-        } else {
-            setPreset(+select.value, BLEND_SECONDS);
-        }
-    });
-    setPreset(0, 0);
-    $('presets').hidden = false;
-    // al limpiar la pantalla; si alguien ha fijado un preset en el menú, se respeta
-    cambiarFondo = () => { if (cycling) setPreset((current + 1) % keys.length, BLEND_SECONDS); };
+    cambiarFondo(0);
 
     // El cambio de tamaño se aplica dentro del bucle, después de un render:
     // setRendererSize() falla si se llama antes del primer fotograma
@@ -240,6 +221,7 @@ function scrollDown(dy) {
 }
 
 addEventListener('wheel', (e) => {
+    if (about.open) return; // dentro de "sobre MEWS!" el scroll es el normal
     e.preventDefault();
     scrollDown(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY);
 }, { passive: false });
@@ -247,6 +229,7 @@ addEventListener('wheel', (e) => {
 let touchY = null;
 addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
 addEventListener('touchmove', (e) => {
+    if (about.open) return;
     e.preventDefault();
     const y = e.touches[0].clientY;
     scrollDown(touchY - y);
@@ -275,7 +258,7 @@ const bostezo = (ms) => (ms > YAWN_MS / 3 && ms < YAWN_MS * 2 / 3 ? 'yawn3' : 'y
 
 function nekoSprite(idle) {
     const yawnAt = THOUGHT_SECONDS * 1000 - YAWN_MS; // en el premio, el bostezo cierra el pensamiento
-    if (nekoMode === 'intro') return 'Awake';
+    if (nekoMode === 'intro' || about.open) return 'Awake'; // con "sobre MEWS!" abierto está hablando
     if (nekoMode === 'run' || idle < RUN_MS) return anda('Down1', 'down2');
     if (premio) return idle < yawnAt ? anda('scratch1', 'scratch2') : bostezo(idle - yawnAt);
     if (idle < AWAKE_MS) return 'Awake';
@@ -312,6 +295,7 @@ async function nekoIntro() {
     await wait(RUN_SECONDS);
     nekoMode = 'free';
     lastScroll = performance.now() - AWAKE_MS; // llega cansado: bosteza enseguida y se duerme
+    $('about-btn').hidden = false;
 }
 
 // En su esquina: tocarlo lo despierta y recuerda cómo navegar (no interrumpe su rato de calma)
@@ -325,6 +309,14 @@ nekoEl.addEventListener('click', () => {
     clearTimeout(helpTimer);
     helpTimer = setTimeout(() => bubble.classList.add('hidden'), HELP_SECONDS * 1000);
 });
+
+// "sobre MEWS!": el bocadillo grande. Tocar fuera también lo cierra (el clic llega al propio <dialog>)
+$('about-btn').addEventListener('click', () => {
+    bubble.classList.add('hidden');
+    about.showModal();
+    $('about-text').scrollTop = 0; // siempre desde el principio, no donde se dejó la última vez
+});
+about.addEventListener('click', (e) => { if (e.target === about) about.close(); });
 
 // Pestaña oculta o móvil bloqueado: silencio (y spawn() no añade noticias)
 document.addEventListener('visibilitychange', () => {

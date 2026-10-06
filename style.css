@@ -121,25 +121,70 @@ html, body {
 #thought::after { width: 7px; height: 7px; top: calc(100% + 18px); left: 24px; }
 #thought.hidden { opacity: 0; }
 
-#presets {
+#about-btn {
     position: fixed;
     right: 16px;
     bottom: calc(16px + env(safe-area-inset-bottom));
-    max-width: calc(100vw - 112px); /* deja sitio al neko */
     padding: 4px 0;
-    font-size: .75rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    border: 0;
+    background: none;
+    color: #fff;
+    font: inherit;
+    font-size: .85rem;
     opacity: .6;
+    cursor: pointer;
 }
-#presets:hover { opacity: 1; }
-#preset {
+#about-btn:hover { opacity: 1; }
+
+/* "sobre MEWS!": el bocadillo del neko en grande, con el piquito sobre él
+   (bottom = margen 16 + neko 64 + hueco 14, igual que #bubble) */
+#about {
+    inset: auto auto calc(94px + env(safe-area-inset-bottom)) 16px;
+    width: min(calc(100vw - 32px), 440px);
+    max-width: none; /* el navegador pone uno por defecto y lo estrecha en móvil */
+    max-height: calc(100dvh - 120px - env(safe-area-inset-bottom));
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 14px;
+    overflow: visible; /* deja ver el piquito */
+    background: #fff;
+    color: #000;
+    font-size: .95rem;
+    line-height: 1.45;
+}
+#about[open] { display: flex; flex-direction: column; }
+#about::backdrop { background: rgba(0, 0, 0, .25); }
+#about::after {
+    content: '';
     position: absolute;
-    inset: 0;
-    width: 100%;
-    opacity: 0;
-    font-size: 16px; /* menos de 16px hace zoom en iOS al tocar */
+    top: 100%;
+    left: 24px; /* centro del neko (32px) menos medio piquito */
+    border: 8px solid transparent;
+    border-top-color: #fff;
+}
+#about-text {
+    flex: 1;
+    min-height: 0;
+    padding: 1.1rem 1.3rem 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y; /* body lleva touch-action: none; aquí sí se hace scroll normal */
+}
+#about-text:focus { outline: none; } /* recibe el foco al abrir solo para no saltar al primer enlace */
+#about p { margin: 0 0 .8rem; }
+#about strong { font-size: 1.4rem; font-weight: 400; }
+#about h2 { margin: 1.2rem 0 .5rem; font-size: 1rem; font-weight: 400; opacity: .6; }
+#about small { opacity: .6; }
+#about a { color: inherit; }
+#about form { padding: .6rem 1.3rem 1rem; text-align: right; }
+#about form button {
+    padding: .3rem 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
     cursor: pointer;
 }
 

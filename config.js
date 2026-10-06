@@ -1,9 +1,9 @@
-// AJUSTES de monicas: todo lo que se puede tocar sin miedo.
+// AJUSTES de MEWS!: todo lo que se puede tocar sin miedo.
 // Cambia un número, guarda y recarga la página. El código que los usa está en main.js.
 
 // ----- Ritmo (en segundos) -----
 // toca -> INTRO -> RUN -> CALM -> 1ª noticia -> FIRST_GAP -> 2ª -> FIRST_GAP·ACCEL -> 3ª -> ...
-const INTRO_SECONDS = 5;      // lo que el neko tarda en explicar antes de irse
+const INTRO_SECONDS = 7;      // lo que el neko tarda en explicar antes de irse
 const RUN_SECONDS = 1.6;      // lo que tarda en correr del centro a su esquina
 const CALM_SECONDS = 3;       // calma desde que llega a su esquina hasta la 1ª noticia
 const FIRST_GAP = 2;          // segundos entre la 1ª y la 2ª noticia
@@ -15,12 +15,7 @@ const MIN_GAP = 0.6;          // el hueco nunca baja de aquí
 const MAX_NEWS = 25;          // con esta cantidad el velo es negro total y la música calla
 const BASE_DIM = 0.35;        // oscuridad del fondo sin noticias (los presets son muy brillantes)
 const MUSIC_VOLUME = 0.6;
-const PRESETS = [             // presets tranquilos (los mismos que el reproductor de diegosanmarcos)
-    'martin - castle in the air',
-    '_Mig_085',
-    'Aderrasi - Potion of Spirits'
-];
-const PRESET_SECONDS = 25;    // cada cuánto cambia de preset
+const PRESET_SECONDS = 25;    // cada cuánto cambia de fondo
 const BLEND_SECONDS = 4;      // fundido entre presets
 
 // ----- Noticias -----

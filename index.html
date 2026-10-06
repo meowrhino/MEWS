@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#000">
-    <title>monicas</title>
+    <title>MEWS!</title>
     <link rel="icon" href="neko/Awake.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap">
@@ -14,11 +14,21 @@
     <canvas id="bg"></canvas>
     <div id="veil"></div>
     <div id="news" aria-live="polite"></div>
-    <!-- el select va invisible encima del texto: iOS no deja alinear el texto de un select -->
-    <label id="presets" hidden>
-        <span id="preset-name"></span>
-        <select id="preset" aria-label="preset del fondo"></select>
-    </label>
+    <button id="about-btn" type="button" hidden>sobre MEWS!</button>
+
+    <!-- "sobre MEWS!": un bocadillo grande del neko. Se cierra con el botón, con Esc o tocando fuera -->
+    <dialog id="about" aria-label="sobre MEWS!">
+        <div id="about-text" tabindex="-1" autofocus>
+            <p><strong>sobre MEWS!</strong></p>
+            <p>MEWS! es una pieza que reflexiona sobre el scroll infinito, la economía de la atención, la saturación de contenidos en nuestras pantallas y el bombardeo y la censura de contenidos, a través de una interfaz que contrapone una invitación al descanso y a la pausa con la saturación de contenidos. Una promesa inicial de calma es interrumpida por una serie de noticias que emergen en la pantalla y modifican nuestra interacción y relación con el contenido, haciendo visible la falta de agencia sobre los contenidos de las plataformas de las big tech.</p>
+            <p>Exploramos la relación entre el scroll, la atención y el contenido: ¿cuánto control tenemos realmente sobre aquello que vemos?</p>
+            <p>Existe una paradoja en las plataformas de contenidos digitales: aquello que no vemos y aquello que no podemos dejar de ver forman parte de una sofisticada infraestructura de atención y de captura de datos que habitamos y de la que es muy difícil escapar. A la vez que es un gesto imposible, la única interacción posible es un scroll infinito del que no podemos salir.</p>
+            <h2>créditos</h2>
+            <p>Fondos: <a href="https://github.com/jberg/butterchurn" target="_blank" rel="noopener">Butterchurn</a>, de Jordan Berg (licencia MIT), versión web de MilkDrop, de Ryan Geiss. Presets de <a href="https://github.com/jberg/butterchurn-presets" target="_blank" rel="noopener">butterchurn-presets</a> (MIT), cada uno de su autor.<br><small>fondo de ahora: <span id="preset-name"></span></small></p>
+            <p>Neko: sprites de <a href="https://github.com/leiqunni/Neko98" target="_blank" rel="noopener">Neko98</a>, de David Harvey. Neko original de Masayuki Koba.</p>
+        </div>
+        <form method="dialog"><button>cerrar</button></form>
+    </dialog>
 
     <!-- pantalla negra de entrada: el toque es obligatorio para que suene el audio en móvil -->
     <button id="start" type="button" aria-label="entrar"></button>
@@ -27,7 +37,7 @@
     <div id="neko-box" class="intro">
         <div id="bubble" aria-live="polite">
             <p id="msg-hola"><strong>bienvenide</strong><br>toca la pantalla para entrar<br><small>con auriculares, mejor</small></p>
-            <p id="msg-instrucciones" hidden>van a llegar noticias, cada vez más deprisa.<br>haz scroll hacia abajo para apartarlas y que vuelva la calma.<br><small>yo me voy a dormir ahí abajo</small></p>
+            <p id="msg-instrucciones" hidden>van a llegar noticias, cada vez más deprisa.<br>haz scroll hacia abajo para apartarlas y que vuelva la calma.<br><small>yo me voy a dormir ahí abajo</small><br><small>aviso: los fondos tienen luces que parpadean, cuidado si tienes fotosensibilidad</small></p>
             <p id="msg-ayuda" hidden>haz scroll hacia abajo<br>para apartar las noticias</p>
         </div>
         <p id="thought" class="hidden" aria-live="polite"></p>
