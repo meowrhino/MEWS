@@ -150,7 +150,7 @@ html, body {
     transform: translateX(-50%);
     width: min(calc(100vw - 32px), 38rem); /* en móvil casi toda la pantalla; en grande, líneas que se leen bien */
     max-width: none; /* el navegador pone uno por defecto */
-    max-height: calc(100dvh - 120px - env(safe-area-inset-bottom));
+    max-height: none;
     margin: 0;
     padding: 0;
     border: 0;
@@ -163,7 +163,6 @@ html, body {
     text-align: center;
     text-wrap: pretty;
 }
-#about[open] { display: flex; flex-direction: column; }
 #about::after {
     content: '';
     position: absolute;
@@ -173,9 +172,10 @@ html, body {
     border: 8px solid transparent;
     border-top-color: #fff;
 }
+/* el límite de alto va aquí y no en el dialog: con flex, iOS lo dejaba en una franja */
 #about-text {
-    flex: 1;
-    min-height: 0;
+    max-height: calc(100dvh - 120px - env(safe-area-inset-bottom));
+    box-sizing: border-box;
     padding: 1.1rem 1.3rem;
     overflow-y: auto;
     overscroll-behavior: contain;
