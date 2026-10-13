@@ -11,7 +11,7 @@ html, body {
     user-select: none;
 }
 
-#bg, #veil, #news {
+#bg, #veil, #news, #avisos {
     position: fixed;
     inset: 0;
     width: 100%;
@@ -31,7 +31,8 @@ html, body {
     width: 100vw;
     margin: 0;
     font-size: clamp(1.3rem, 6.5vw, 2.1rem);
-    line-height: normal;
+    line-height: 1em;
+    letter-spacing: -.025em; /* texto grande: algo más junto se lee mejor */
     text-align: center;
     opacity: 0;
     transition: opacity 1.5s ease;
@@ -39,23 +40,25 @@ html, body {
 }
 .noticia.visible { opacity: 1; }
 
-/* Aviso con la pantalla llena: negro, por encima de las noticias */
-#scroll-hint {
-    position: fixed;
-    inset: 0 0 auto; /* la altura (NEWS_AREA) la pone main.js: así se centra en la zona donde salen las noticias */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* «haz scroll» con la pantalla llena: como una noticia, pero grande y en negro (se lee donde cruza el texto blanco) */
+.aviso {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
     margin: 0;
     color: #000;
     font-size: clamp(3.5rem, 17vw, 7.5rem);
     line-height: normal;
-    pointer-events: none;
-    transition: opacity .6s ease;
+    letter-spacing: -.025em;
+    text-align: center;
+    opacity: 0;
+    transition: opacity .6s ease; /* igual que FADE_SECONDS */
+    will-change: transform;
 }
-#scroll-hint.hidden { opacity: 0; }
+.aviso.visible { opacity: 1; }
 
-/* Los bocadillos aparecen y se van en .6s: main.js espera eso (FADE_SECONDS) antes de mover al neko */
+/* Los bocadillos aparecen (con un pequeño rebote) y se van en .6s: main.js espera eso (FADE_SECONDS) antes de mover al neko */
 
 /* Neko + bocadillo. En su sitio: abajo a la izquierda. Con .intro: en el centro de la pantalla
    (64px de caja con 16px de margen -> su centro está a 48px del borde) */
@@ -98,7 +101,8 @@ html, body {
     font-size: 1.05rem;
     line-height: normal;
     text-align: center;
-    transition: opacity .6s ease;
+    transform-origin: 50% 100%; /* crece y se encoge desde el piquito */
+    transition: opacity .6s ease, scale .6s cubic-bezier(.34, 1.56, .64, 1), translate .6s cubic-bezier(.34, 1.56, .64, 1); /* al aparecer: sube y rebota un poco */
 }
 #bubble::after { /* el piquito hacia el neko */
     content: '';
@@ -112,9 +116,9 @@ html, body {
 #bubble p { margin: 0; }
 #bubble strong { font-size: 1.4rem; font-weight: 400; }
 #bubble small { font-size: .85rem; opacity: .6; }
-#bubble.hidden { opacity: 0; }
+#bubble.hidden, #thought.hidden, #about.hidden { opacity: 0; scale: .8; translate: 0 10px; transition: opacity .6s ease, scale .6s ease-in, translate .6s ease-in; } /* al irse: baja y se encoge */
 /* en su esquina el bocadillo sale hacia la derecha, con el piquito sobre el neko */
-#neko-box:not(.intro) #bubble { left: 0; transform: none; }
+#neko-box:not(.intro) #bubble { left: 0; transform: none; transform-origin: 32px 100%; }
 #neko-box:not(.intro) #bubble::after { left: 32px; }
 
 /* Bocadillo de pensar: nube encima del neko en su esquina, con dos burbujitas hacia él */
@@ -132,7 +136,8 @@ html, body {
     font-size: .95rem;
     line-height: normal;
     text-align: center;
-    transition: opacity .6s ease;
+    transform-origin: 30px 100%; /* las burbujitas apuntan al neko */
+    transition: opacity .6s ease, scale .6s cubic-bezier(.34, 1.56, .64, 1), translate .6s cubic-bezier(.34, 1.56, .64, 1);
 }
 #thought::before, #thought::after {
     content: '';
@@ -142,7 +147,6 @@ html, body {
 }
 #thought::before { width: 12px; height: 12px; top: calc(100% + 4px); left: 30px; }
 #thought::after { width: 7px; height: 7px; top: calc(100% + 18px); left: 24px; }
-#thought.hidden { opacity: 0; }
 
 #about-btn {
     position: fixed;
@@ -180,9 +184,9 @@ html, body {
     line-height: normal;
     text-align: center;
     text-wrap: pretty;
-    transition: opacity .6s ease;
+    transform-origin: 50% 100%;
+    transition: opacity .6s ease, scale .6s cubic-bezier(.34, 1.56, .64, 1), translate .6s cubic-bezier(.34, 1.56, .64, 1);
 }
-#about.hidden { opacity: 0; }
 #about::after {
     content: '';
     position: absolute;

@@ -7,7 +7,7 @@ const INTRO_SECONDS = 5;      // lo que el neko tarda en explicar antes de irse
 const RUN_SECONDS = 1.6;      // lo que tarda en correr del centro a su esquina
 const CALM_SECONDS = 3;       // calma desde que llega a su esquina hasta la 1ª noticia
 const FIRST_GAP = 2;          // segundos entre la 1ª y la 2ª noticia
-const ACCEL = 0.8;            // aceleración: cada hueco dura esto × el anterior
+const ACCEL = 0.6;            // aceleración: cada hueco dura esto × el anterior
                               // 0.88 = un 12% más corto · 1 = sin aceleración · 0.8 = acelera más
 const MIN_GAP = 0.6;          // el hueco nunca baja de aquí
 
@@ -25,6 +25,10 @@ const NOTICIAS_URL = 'noticias.json';
 const NEWS_AREA = 0.85;       // las noticias salen en el 85% de arriba de la pantalla
 const NEWS_DRIFT = 0.3;       // y se desplazan a los lados hasta ±15% del ancho (este valor es el total)
 const textoDe = (n) => (typeof n === 'string' ? n : n?.titulo ?? n?.title);
+
+// ----- Aviso «haz scroll» (con MAX_NEWS noticias en pantalla) -----
+const HINT_MAX = 3;           // cuántos a la vez como máximo
+const HINT_SECONDS = 4;       // lo que dura cada uno (salen uno cada HINT_SECONDS / HINT_MAX)
 
 // ----- La calma cuando apartas todas las noticias -----
 // paras de hacer scroll -> el neko se rasca con el pensamiento encima -> bosteza -> se duerme

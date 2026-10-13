@@ -14,8 +14,8 @@
     <canvas id="bg"></canvas>
     <div id="veil"></div>
     <div id="news" aria-live="polite"></div>
-    <!-- aparece con MAX_NEWS noticias en pantalla, por encima de ellas -->
-    <p id="scroll-hint" class="hidden" aria-hidden="true">haz scroll</p>
+    <!-- «haz scroll» en negro, por encima de las noticias: salen con MAX_NEWS noticias en pantalla -->
+    <div id="avisos" aria-hidden="true"></div>
     <button id="about-btn" type="button" aria-controls="about" aria-expanded="false" hidden>sobre MEWS!</button>
 
     <!-- "sobre MEWS!": bocadillo grande del neko en el centro. Se cierra con el mismo botón, con Esc o tocando fuera -->
@@ -39,7 +39,7 @@
     <!-- el neko empieza en el centro diciendo las instrucciones y luego corre a su esquina -->
     <div id="neko-box" class="intro">
         <div id="bubble" aria-live="polite">
-            <p id="msg-hola"><strong>bienvenide</strong><br>toca la pantalla para entrar<br><small>aviso: los fondos tienen luces que parpadean, cuidado si tienes fotosensibilidad</small></p>
+            <p id="msg-hola"><strong>bienvenide</strong><br>sube el volumen<br>y toca la pantalla para entrar<br><small>aviso: los fondos tienen luces que parpadean, cuidado si tienes fotosensibilidad</small></p>
             <p id="msg-instrucciones" hidden>van a llegar noticias, cada vez más deprisa.<br>haz scroll hacia abajo para apartarlas y que vuelva la calma.<br><small>yo me voy a dormir ahí abajo</small></p>
             <p id="msg-ayuda" hidden>haz scroll hacia abajo<br>para apartar las noticias</p>
         </div>

@@ -10,8 +10,7 @@
 const $ = (id) => document.getElementById(id);
 const canvas = $('bg'), veilEl = $('veil'), newsEl = $('news'), startEl = $('start');
 const nekoBox = $('neko-box'), nekoEl = $('neko'), bubble = $('bubble'), thoughtEl = $('thought');
-const about = $('about'), hintEl = $('scroll-hint');
-hintEl.style.height = `${NEWS_AREA * 100}%`; // centrado en la zona donde salen las noticias (42,5 % con 0,85)
+const about = $('about'), avisosEl = $('avisos');
 const LINE_PX = 16;           // alto aproximado de una línea, para ruedas que scrollean por líneas
 const TICK_MS = 120;          // paso de las animaciones del neko
 const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
@@ -21,6 +20,7 @@ let cambiarFondo = () => {};  // pasa a otro preset al azar; la define startVisu
 let pausado = false;          // «sobre MEWS!» abierto o el neko yendo/volviendo: sin noticias nuevas ni scroll
 let nextTitular = () => null, nextPensamiento = () => null; // se rellenan al cargar los JSON
 let news = [];                // [{ el, x, y, h }]
+let avisos = [];              // «haz scroll»: mismos campos que news, más `fuera` si se está yendo
 let spawned = 0;              // noticias desde la última vez que la pantalla quedó vacía
 let spawnTimer;
 let premio = false;           // has apartado todas las noticias: el neko está en su rato de calma
@@ -158,23 +158,28 @@ function place(n) {
     n.el.style.transform = `translate(${n.x}px, ${n.y}px)`;
 }
 
+// Elemento de texto en una posición al azar de la zona de noticias (arriba NEWS_AREA, ±NEWS_DRIFT a los lados)
+function crearEn(padre, clase, texto) {
+    const el = document.createElement('p');
+    el.className = clase;
+    el.textContent = texto;
+    padre.append(el);
+    const h = el.offsetHeight;
+    const n = {
+        el,
+        h,
+        x: (Math.random() - 0.5) * innerWidth * NEWS_DRIFT,
+        y: Math.random() * Math.max(0, innerHeight * NEWS_AREA - h)
+    };
+    place(n);
+    requestAnimationFrame(() => el.classList.add('visible'));
+    return n;
+}
+
 function spawn() {
     const texto = !document.hidden && !pausado && nextTitular(); // en pausa se reintenta con el mismo hueco
     if (texto) {
-        const el = document.createElement('p');
-        el.className = 'noticia';
-        el.textContent = texto;
-        newsEl.append(el);
-        const h = el.offsetHeight;
-        const n = {
-            el,
-            h,
-            x: (Math.random() - 0.5) * innerWidth * NEWS_DRIFT,
-            y: Math.random() * Math.max(0, innerHeight * NEWS_AREA - h)
-        };
-        place(n);
-        news.push(n);
-        requestAnimationFrame(() => el.classList.add('visible'));
+        news.push(crearEn(newsEl, 'noticia', texto));
         spawned++;
         updateVeil();
     }
@@ -187,9 +192,28 @@ function scheduleSpawn(seconds) {
     spawnTimer = setTimeout(spawn, seconds * 1000);
 }
 
+// «haz scroll»: con la pantalla llena salen hasta HINT_MAX, se mueven con el scroll y se van solos a los HINT_SECONDS
+function nuevoAviso() {
+    if (veil < 1 || pausado || avisos.filter((a) => !a.fuera).length >= HINT_MAX) return;
+    const a = crearEn(avisosEl, 'aviso', 'haz scroll');
+    avisos.push(a);
+    setTimeout(() => quitarAviso(a), HINT_SECONDS * 1000);
+}
+setInterval(nuevoAviso, HINT_SECONDS * 1000 / HINT_MAX);
+
+function quitarAviso(a) {
+    if (a.fuera) return;
+    a.fuera = true; // sigue moviéndose con el scroll mientras se desvanece
+    a.el.classList.remove('visible');
+    setTimeout(() => {
+        a.el.remove();
+        avisos = avisos.filter((x) => x !== a);
+    }, FADE_SECONDS * 1000);
+}
+
 function updateVeil() {
     veil = Math.min(1, news.length / MAX_NEWS);
-    hintEl.classList.toggle('hidden', veil < 1); // pantalla llena: «haz scroll»
+    if (veil < 1) avisos.forEach(quitarAviso); // ya no está llena: fuera los avisos
     veilEl.style.opacity = BASE_DIM + (MAX_VEIL - BASE_DIM) * veil;
     if (master) master.gain.setTargetAtTime(MUSIC_VOLUME * (1 - veil) ** VOLUME_CURVE, ctx.currentTime, 0.8);
 }
@@ -208,6 +232,11 @@ function empezarCalma() {
 function scrollDown(dy) {
     if (dy <= 0 || pausado) return;
     lastScroll = performance.now();
+    avisos.forEach((a) => {
+        a.y -= dy;
+        place(a);
+        if (a.y + a.h < 0) quitarAviso(a);
+    });
     const had = news.length;
     news = news.filter((n) => {
         n.y -= dy;
