@@ -11,6 +11,8 @@ const $ = (id) => document.getElementById(id);
 const canvas = $('bg'), veilEl = $('veil'), newsEl = $('news'), startEl = $('start');
 const nekoBox = $('neko-box'), nekoEl = $('neko'), bubble = $('bubble'), thoughtEl = $('thought');
 const about = $('about');
+const LINE_PX = 16;           // alto aproximado de una línea, para ruedas que scrollean por líneas
+const TICK_MS = 120;          // paso de las animaciones del neko
 const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
 
 let ctx, master, analyser, visualizer;
@@ -171,8 +173,8 @@ function spawn() {
         const n = {
             el,
             h,
-            x: (Math.random() - 0.5) * innerWidth * 0.3,
-            y: Math.random() * Math.max(0, innerHeight * 0.85 - h)
+            x: (Math.random() - 0.5) * innerWidth * NEWS_DRIFT,
+            y: Math.random() * Math.max(0, innerHeight * NEWS_AREA - h)
         };
         place(n);
         news.push(n);
@@ -191,8 +193,18 @@ function scheduleSpawn(seconds) {
 
 function updateVeil() {
     veil = Math.min(1, news.length / MAX_NEWS);
-    veilEl.style.opacity = BASE_DIM + (0.97 - BASE_DIM) * veil;
-    if (master) master.gain.setTargetAtTime(MUSIC_VOLUME * (1 - veil) ** 1.5, ctx.currentTime, 0.8);
+    veilEl.style.opacity = BASE_DIM + (MAX_VEIL - BASE_DIM) * veil;
+    if (master) master.gain.setTargetAtTime(MUSIC_VOLUME * (1 - veil) ** VOLUME_CURVE, ctx.currentTime, 0.8);
+}
+
+// Pantalla limpia: fondo nuevo y paran las noticias hasta que el neko se duerma (ver Neko)
+function empezarCalma() {
+    spawned = 0;
+    clearTimeout(spawnTimer);
+    premio = true;
+    thoughtEl.textContent = nextPensamiento() ?? '';
+    bubble.classList.add('hidden'); // la ayuda no se monta encima del pensamiento
+    cambiarFondo();
 }
 
 // ===== Scroll virtual: solo hacia abajo, lo que sale por arriba se pierde =====
@@ -209,21 +221,14 @@ function scrollDown(dy) {
         place(n);
         return true;
     });
-    if (had && !news.length) { // pantalla limpia: fondo nuevo y paran las noticias hasta que el neko se duerma (ver Neko)
-        spawned = 0;
-        clearTimeout(spawnTimer);
-        premio = true;
-        thoughtEl.textContent = nextPensamiento() ?? '';
-        bubble.classList.add('hidden'); // la ayuda no se monta encima del pensamiento
-        cambiarFondo();
-    }
+    if (had && !news.length) empezarCalma();
     updateVeil();
 }
 
 addEventListener('wheel', (e) => {
     if (about.open) return; // dentro de "sobre MEWS!" el scroll es el normal
     e.preventDefault();
-    scrollDown(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY);
+    scrollDown(e.deltaMode === 1 ? e.deltaY * LINE_PX : e.deltaY);
 }, { passive: false });
 
 let touchY = null;
@@ -246,9 +251,8 @@ addEventListener('touchmove', (e) => {
 const RUN_MS = 150;           // sigue corriendo un poco tras el último scroll (llega a saltos)
 const AWAKE_MS = 4000;        // despierto antes de bostezar
 const YAWN_MS = 1500;         // lo que dura un bostezo
-const FADE_SECONDS = 0.6;     // lo que tardan los bocadillos en aparecer o irse (igual que en style.css)
 let nekoMode = 'quieto';
-let tick = 0;                 // sube cada 120 ms: marca el paso de las animaciones
+let tick = 0;                 // sube cada TICK_MS: marca el paso de las animaciones
 
 // precarga, para que no parpadee al cambiar de sprite
 ['Awake', 'Down1', 'down2', 'Right1', 'right2', 'left1', 'left2', 'scratch1', 'scratch2', 'yawn2', 'yawn3', 'sleep1', 'sleep2']
@@ -284,7 +288,7 @@ setInterval(() => {
         nekoEl.dataset.s = s;
         nekoEl.src = `neko/${s}.ico`;
     }
-}, 120);
+}, TICK_MS);
 
 // Antes de moverse, el neko se calla: se van los bocadillos y espera a que acaben de irse
 function callar() {

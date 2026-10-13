@@ -78,7 +78,7 @@ for (let v = 1; v <= 40; v++) {
     if (!seLee(q, QR_URL)) continue;
     fs.writeFileSync(path.join(__dirname, 'qr-neko.svg'), toSVG(q));
     console.log(`qr-neko.svg: versión ${v}, se lee bien`);
-    return;
+    process.exit(0);
 }
-console.log('NO SE LEE en ninguna versión');
-process.exitCode = 1;
+console.error('NO SE LEE en ninguna versión');
+process.exit(1);

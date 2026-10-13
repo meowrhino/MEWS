@@ -17,11 +17,15 @@ const BASE_DIM = 0.35;        // oscuridad del fondo sin noticias (los presets s
 const MUSIC_VOLUME = 0.6;
 const PRESET_SECONDS = 25;    // cada cuánto cambia de fondo
 const BLEND_SECONDS = 4;      // fundido entre presets
+const MAX_VEIL = 0.97;        // opacidad del velo con MAX_NEWS noticias (no llega a 1 para que el fondo asome)
+const VOLUME_CURVE = 1.5;     // cómo cae la música con el velo: 1 = lineal, más alto = calla antes
 
 // ----- Noticias -----
 // Cuando exista la API del compañero: poner su URL aquí y ajustar el campo en textoDe()
 const API_URL = '';
 const FALLBACK_URL = 'noticias.json';
+const NEWS_AREA = 0.85;       // las noticias salen en el 85% de arriba de la pantalla
+const NEWS_DRIFT = 0.3;       // y se desplazan a los lados hasta ±15% del ancho (este valor es el total)
 const textoDe = (n) => (typeof n === 'string' ? n : n?.titulo ?? n?.title);
 
 // ----- La calma cuando apartas todas las noticias -----
@@ -32,3 +36,6 @@ const THOUGHT_SECONDS = 6;    // lo que dura el pensamiento (rascarse + el boste
 
 // ----- Tocar al neko en su esquina -----
 const HELP_SECONDS = 4;       // lo que dura el bocadillo de ayuda (el texto está en index.html, #msg-ayuda)
+
+// ----- Neko -----
+const FADE_SECONDS = 0.6;     // lo que tardan los bocadillos en aparecer o irse (igual que en style.css)
