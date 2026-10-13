@@ -30,7 +30,7 @@ html, body {
     top: 0;
     width: 100vw;
     margin: 0;
-    font-size: clamp(1.6rem, 8vw, 2.6rem);
+    font-size: clamp(1.3rem, 6.5vw, 2.1rem);
     line-height: normal;
     text-align: center;
     opacity: 0;
@@ -48,9 +48,8 @@ html, body {
     justify-content: center;
     margin: 0;
     color: #000;
-    font-size: clamp(3rem, 14vw, 6rem);
+    font-size: clamp(3.5rem, 17vw, 7.5rem);
     line-height: normal;
-    padding-bottom: .12em; /* sin descendentes, el texto se ve más bajo que su caja: lo subimos */
     pointer-events: none;
     transition: opacity .6s ease;
 }
