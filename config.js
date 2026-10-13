@@ -7,7 +7,7 @@ const INTRO_SECONDS = 5;      // lo que el neko tarda en explicar antes de irse
 const RUN_SECONDS = 1.6;      // lo que tarda en correr del centro a su esquina
 const CALM_SECONDS = 3;       // calma desde que llega a su esquina hasta la 1ª noticia
 const FIRST_GAP = 2;          // segundos entre la 1ª y la 2ª noticia
-const ACCEL = 0.6;            // aceleración: cada hueco dura esto × el anterior
+const ACCEL = 0.45;           // aceleración: cada hueco dura esto × el anterior
                               // 0.88 = un 12% más corto · 1 = sin aceleración · 0.8 = acelera más
 const MIN_GAP = 0.6;          // el hueco nunca baja de aquí
 
