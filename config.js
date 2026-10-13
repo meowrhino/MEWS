@@ -26,9 +26,9 @@ const NEWS_AREA = 0.85;       // las noticias salen en el 85% de arriba de la pa
 const NEWS_DRIFT = 0.3;       // y se desplazan a los lados hasta ±15% del ancho (este valor es el total)
 const textoDe = (n) => (typeof n === 'string' ? n : n?.titulo ?? n?.title);
 
-// ----- Aviso «haz scroll» (con MAX_NEWS noticias en pantalla) -----
-const HINT_MAX = 3;           // cuántos a la vez como máximo
-const HINT_SECONDS = 4;       // lo que dura cada uno (salen uno cada HINT_SECONDS / HINT_MAX)
+// ----- Aviso «haz scroll» (fijo, aparece entre MAX_NEWS y HINT_FULL_NEWS noticias) -----
+const HINT_FULL_NEWS = 40;    // con tantas noticias el aviso está a opacidad 1
+const HINT_CURVE = 1.5;       // 1 = sube lineal · más alto = aparece más tarde y de golpe al final
 
 // ----- La calma cuando apartas todas las noticias -----
 // paras de hacer scroll -> el neko se rasca con el pensamiento encima -> bosteza -> se duerme

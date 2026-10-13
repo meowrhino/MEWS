@@ -14,8 +14,8 @@
     <canvas id="bg"></canvas>
     <div id="veil"></div>
     <div id="news" aria-live="polite"></div>
-    <!-- «haz scroll» en negro, por encima de las noticias: salen con MAX_NEWS noticias en pantalla -->
-    <div id="avisos" aria-hidden="true"></div>
+    <!-- «haz scroll» en negro, por encima de las noticias: su opacidad sube con el nº de noticias (updateVeil) -->
+    <p id="scroll-hint" aria-hidden="true">haz scroll</p>
     <button id="about-btn" type="button" aria-controls="about" aria-expanded="false" hidden>sobre MEWS!</button>
 
     <!-- "sobre MEWS!": bocadillo grande del neko en el centro. Se cierra con el mismo botón, con Esc o tocando fuera -->
