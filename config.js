@@ -20,9 +20,8 @@ const MAX_VEIL = 0.97;        // opacidad del velo con MAX_NEWS noticias (no lle
 const VOLUME_CURVE = 1.5;     // cómo cae la música con el velo: 1 = lineal, más alto = calla antes
 
 // ----- Noticias -----
-// Cuando exista la API del compañero: poner su URL aquí y ajustar el campo en textoDe()
-const API_URL = '';
-const FALLBACK_URL = 'noticias.json';
+// Array JSON de textos o de objetos con `titulo`/`title` (ver textoDe)
+const NOTICIAS_URL = 'noticias.json';
 const NEWS_AREA = 0.85;       // las noticias salen en el 85% de arriba de la pantalla
 const NEWS_DRIFT = 0.3;       // y se desplazan a los lados hasta ±15% del ancho (este valor es el total)
 const textoDe = (n) => (typeof n === 'string' ? n : n?.titulo ?? n?.title);

@@ -10,14 +10,9 @@ python3 -m http.server 8765
 
 Abrir http://localhost:8765 y tocar la pantalla (el audio necesita un toque en móvil). Con auriculares, mejor.
 
-## Conectar la API
+## Noticias
 
-En `config.js`:
-
-- `API_URL`: la URL del endpoint. Si está vacía o falla, se usa `noticias.json`.
-- `textoDe()`: de qué campo sale el texto de cada noticia (ahora acepta `titulo` o `title`).
-
-La API tiene que devolver un array JSON y permitir CORS desde el dominio de la web.
+Salen de `noticias.json` (`NOTICIAS_URL` en `config.js`): un array de textos, o de objetos con `titulo`/`title` (`textoDe()` decide el campo).
 
 ## Ajustes rápidos (`config.js`)
 

@@ -31,13 +31,30 @@ html, body {
     width: 100vw;
     margin: 0;
     font-size: clamp(1.6rem, 8vw, 2.6rem);
-    line-height: 1.2;
+    line-height: normal;
     text-align: center;
     opacity: 0;
     transition: opacity 1.5s ease;
     will-change: transform;
 }
 .noticia.visible { opacity: 1; }
+
+/* Aviso con la pantalla llena: negro, por encima de las noticias */
+#scroll-hint {
+    position: fixed;
+    inset: 0 0 auto; /* la altura (NEWS_AREA) la pone main.js: así se centra en la zona donde salen las noticias */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    color: #000;
+    font-size: clamp(3rem, 14vw, 6rem);
+    line-height: normal;
+    padding-bottom: .12em; /* sin descendentes, el texto se ve más bajo que su caja: lo subimos */
+    pointer-events: none;
+    transition: opacity .6s ease;
+}
+#scroll-hint.hidden { opacity: 0; }
 
 /* Los bocadillos aparecen y se van en .6s: main.js espera eso (FADE_SECONDS) antes de mover al neko */
 
@@ -80,7 +97,7 @@ html, body {
     background: #fff;
     color: #000;
     font-size: 1.05rem;
-    line-height: 1.5;
+    line-height: normal;
     text-align: center;
     transition: opacity .6s ease;
 }
@@ -114,7 +131,7 @@ html, body {
     background: #fff;
     color: #000;
     font-size: .95rem;
-    line-height: 1.45;
+    line-height: normal;
     text-align: center;
     transition: opacity .6s ease;
 }
@@ -161,7 +178,7 @@ html, body {
     background: #fff;
     color: #000;
     font-size: clamp(1rem, .95rem + .3vw, 1.1rem);
-    line-height: 1.55;
+    line-height: normal;
     text-align: center;
     text-wrap: pretty;
     transition: opacity .6s ease;

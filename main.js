@@ -10,7 +10,8 @@
 const $ = (id) => document.getElementById(id);
 const canvas = $('bg'), veilEl = $('veil'), newsEl = $('news'), startEl = $('start');
 const nekoBox = $('neko-box'), nekoEl = $('neko'), bubble = $('bubble'), thoughtEl = $('thought');
-const about = $('about');
+const about = $('about'), hintEl = $('scroll-hint');
+hintEl.style.height = `${NEWS_AREA * 100}%`; // centrado en la zona donde salen las noticias (42,5 % con 0,85)
 const LINE_PX = 16;           // alto aproximado de una línea, para ruedas que scrollean por líneas
 const TICK_MS = 120;          // paso de las animaciones del neko
 const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
@@ -124,19 +125,16 @@ function startVisualizer() {
 }
 
 // ===== Noticias =====
-// Prueba las URLs en orden y devuelve los textos de la primera que funcione ([] si ninguna)
-async function loadList(...urls) {
-    for (const url of urls.filter(Boolean)) {
-        try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(res.status);
-            const list = (await res.json()).map(textoDe).filter(Boolean);
-            if (list.length) return list;
-        } catch (err) {
-            console.warn('No se pudo cargar', url, err.message);
-        }
+// Carga un JSON y devuelve sus textos ([] si falla)
+async function loadList(url) {
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(res.status);
+        return (await res.json()).map(textoDe).filter(Boolean);
+    } catch (err) {
+        console.warn('No se pudo cargar', url, err.message);
+        return [];
     }
-    return [];
 }
 
 // Devuelve una función que saca los textos en orden aleatorio sin repetir hasta agotarlos
@@ -191,6 +189,7 @@ function scheduleSpawn(seconds) {
 
 function updateVeil() {
     veil = Math.min(1, news.length / MAX_NEWS);
+    hintEl.classList.toggle('hidden', veil < 1); // pantalla llena: «haz scroll»
     veilEl.style.opacity = BASE_DIM + (MAX_VEIL - BASE_DIM) * veil;
     if (master) master.gain.setTargetAtTime(MUSIC_VOLUME * (1 - veil) ** VOLUME_CURVE, ctx.currentTime, 0.8);
 }
@@ -387,7 +386,7 @@ startEl.addEventListener('click', async () => {
     startVisualizer();
     // las listas se cargan mientras habla el neko
     const loading = Promise.all([
-        loadList(API_URL, FALLBACK_URL).then((l) => { nextTitular = baraja(l); }),
+        loadList(NOTICIAS_URL).then((l) => { nextTitular = baraja(l); }),
         loadList(PENSAMIENTOS_URL).then((l) => { nextPensamiento = baraja(l); })
     ]);
     await nekoIntro();
