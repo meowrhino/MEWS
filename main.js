@@ -17,6 +17,7 @@ const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
 
 let ctx, master, analyser, visualizer;
 let cambiarFondo = () => {};  // pasa a otro preset al azar; la define startVisualizer()
+let pausado = false;          // «sobre MEWS!» abierto o el neko yendo/volviendo: sin noticias nuevas ni scroll
 let nextTitular = () => null, nextPensamiento = () => null; // se rellenan al cargar los JSON
 let news = [];                // [{ el, x, y, h }]
 let spawned = 0;              // noticias desde la última vez que la pantalla quedó vacía
@@ -96,14 +97,11 @@ function startVisualizer() {
     }
     visualizer.connectAudio(analyser);
 
-    // Cambia solo cada PRESET_SECONDS y al limpiar la pantalla (y entonces vuelve a contar)
-    let timer;
+    // Solo cambia al limpiar la pantalla (empezarCalma)
     cambiarFondo = (blend = BLEND_SECONDS) => {
         const k = nextPreset();
         $('preset-name').textContent = k; // el nombre lleva el autor: sale en los créditos
         visualizer.loadPreset(all[k], blend);
-        clearTimeout(timer);
-        timer = setTimeout(cambiarFondo, PRESET_SECONDS * 1000);
     };
     cambiarFondo(0);
 
@@ -163,7 +161,7 @@ function place(n) {
 }
 
 function spawn() {
-    const texto = !document.hidden && nextTitular();
+    const texto = !document.hidden && !pausado && nextTitular(); // en pausa se reintenta con el mismo hueco
     if (texto) {
         const el = document.createElement('p');
         el.className = 'noticia';
@@ -209,7 +207,7 @@ function empezarCalma() {
 
 // ===== Scroll virtual: solo hacia abajo, lo que sale por arriba se pierde =====
 function scrollDown(dy) {
-    if (dy <= 0) return;
+    if (dy <= 0 || pausado) return;
     lastScroll = performance.now();
     const had = news.length;
     news = news.filter((n) => {
@@ -248,9 +246,6 @@ addEventListener('touchmove', (e) => {
 // En 'free' el sprite depende de cuánto hace que paraste de hacer scroll (idle):
 //   normal: corre (mientras haces scroll) -> despierto -> bosteza -> duerme
 //   premio: corre -> se rasca con el pensamiento encima -> bosteza -> duerme y vuelven las noticias
-const RUN_MS = 150;           // sigue corriendo un poco tras el último scroll (llega a saltos)
-const AWAKE_MS = 4000;        // despierto antes de bostezar
-const YAWN_MS = 1500;         // lo que dura un bostezo
 let nekoMode = 'quieto';
 let tick = 0;                 // sube cada TICK_MS: marca el paso de las animaciones
 
@@ -335,6 +330,7 @@ const sobreAbierto = () => aboutBtn.getAttribute('aria-expanded') === 'true';
 
 async function abrirSobre() {
     const yo = ++paseo;
+    pausado = true;
     aboutBtn.textContent = 'cerrar';
     aboutBtn.setAttribute('aria-expanded', 'true');
     if (!nekoBox.classList.contains('centro')) { // si estaba cerrándose, ya está en el centro
@@ -366,7 +362,9 @@ async function cerrarSobre() {
     nekoMode = 'vuelta';
     nekoBox.classList.remove('centro');
     await wait(RUN_SECONDS);
-    if (yo === paseo) nekoMode = 'free';
+    if (yo !== paseo) return;
+    nekoMode = 'free';
+    pausado = false;
 }
 
 aboutBtn.addEventListener('click', () => (sobreAbierto() ? cerrarSobre() : abrirSobre()));

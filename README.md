@@ -22,10 +22,10 @@ La API tiene que devolver un array JSON y permitir CORS desde el dominio de la w
 ## Ajustes rápidos (`config.js`)
 
 - `MAX_NEWS`: cuántas noticias hacen falta para que la pantalla quede negra.
-- `MUSIC_VOLUME`, `PRESET_SECONDS`.
+- `MUSIC_VOLUME`, `BLEND_SECONDS`.
 - Ritmo: `INTRO_SECONDS`, `RUN_SECONDS`, `CALM_SECONDS`, `FIRST_GAP`, `ACCEL`, `MIN_GAP`.
 - Textos del neko: en `index.html`, dentro de `#bubble`.
-- Fondos: salen al azar de todo el pack base de Butterchurn (sin repetir seguido) y cambian cada `PRESET_SECONDS` y al apartar todas las noticias.
+- Fondos: salen al azar de todo el pack base de Butterchurn (sin repetir seguido) y cambian solo al apartar todas las noticias (con «sobre MEWS!» abierto todo se pausa).
 - «sobre MEWS!» (abajo a la derecha): el neko corre al centro y abre un bocadillo con la descripción y los créditos, en `index.html` dentro de `#about`. Otras versiones del texto en `textos.txt`.
 - Pensamientos del neko: `pensamientos.json`, mismo formato que `noticias.json`. Al apartar todas las noticias el neko se rasca con el pensamiento encima y bosteza (todo dentro de `THOUGHT_SECONDS`), se duerme y vuelven las noticias.
 - `neko/` tiene todos los sprites de Neko98 (correr en 8 direcciones, arañar paredes `*claw*`, lavarse `wash2`, huellas `fp_*`…), aunque no se usen todos.

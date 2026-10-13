@@ -15,8 +15,7 @@ const MIN_GAP = 0.6;          // el hueco nunca baja de aquí
 const MAX_NEWS = 25;          // con esta cantidad el velo es negro total y la música calla
 const BASE_DIM = 0.35;        // oscuridad del fondo sin noticias (los presets son muy brillantes)
 const MUSIC_VOLUME = 0.6;
-const PRESET_SECONDS = 25;    // cada cuánto cambia de fondo
-const BLEND_SECONDS = 4;      // fundido entre presets
+const BLEND_SECONDS = 4;      // fundido entre presets (el fondo cambia al limpiar la pantalla de noticias)
 const MAX_VEIL = 0.97;        // opacidad del velo con MAX_NEWS noticias (no llega a 1 para que el fondo asome)
 const VOLUME_CURVE = 1.5;     // cómo cae la música con el velo: 1 = lineal, más alto = calla antes
 
@@ -37,5 +36,8 @@ const THOUGHT_SECONDS = 6;    // lo que dura el pensamiento (rascarse + el boste
 // ----- Tocar al neko en su esquina -----
 const HELP_SECONDS = 4;       // lo que dura el bocadillo de ayuda (el texto está en index.html, #msg-ayuda)
 
-// ----- Neko -----
+// ----- Neko (en milisegundos) -----
+const RUN_MS = 150;           // sigue corriendo un poco tras el último scroll (llega a saltos)
+const AWAKE_MS = 4000;        // despierto antes de bostezar
+const YAWN_MS = 1500;         // lo que dura un bostezo
 const FADE_SECONDS = 0.6;     // lo que tardan los bocadillos en aparecer o irse (igual que en style.css)
