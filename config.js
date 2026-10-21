@@ -2,10 +2,9 @@
 // Cambia un número, guarda y recarga la página. El código que los usa está en main.js.
 
 // ----- Ritmo (en segundos) -----
-// toca -> INTRO -> RUN -> CALM -> 1ª noticia -> FIRST_GAP -> 2ª -> FIRST_GAP·ACCEL -> 3ª -> ...
-const INTRO_SECONDS = 5;      // lo que el neko tarda en explicar antes de irse
+// toca -> (2 clics del neko) -> RUN -> CALM -> 1ª noticia -> FIRST_GAP -> 2ª -> FIRST_GAP·ACCEL -> 3ª -> ...
 const RUN_SECONDS = 1.6;      // lo que tarda en correr del centro a su esquina
-const CALM_SECONDS = 3;       // calma desde que llega a su esquina hasta la 1ª noticia
+const CALM_SECONDS = 10;      // calma desde que vuelve a su esquina hasta la 1ª noticia
 const FIRST_GAP = 2;          // segundos entre la 1ª y la 2ª noticia
 const ACCEL = 0.45;           // aceleración: cada hueco dura esto × el anterior
                               // 0.88 = un 12% más corto · 1 = sin aceleración · 0.8 = acelera más

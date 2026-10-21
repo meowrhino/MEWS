@@ -69,7 +69,7 @@ html, body {
     width: 64px;
     height: 64px;
     z-index: 2; /* por encima de #start */
-    pointer-events: none; /* main.js lo activa mientras explica, para poder saltarlo */
+    pointer-events: none;
     cursor: pointer;
 }
 #neko-box.intro {
@@ -209,7 +209,9 @@ html, body {
 #about p { margin: 0 0 .8rem; }
 #about p:last-child { margin: 0; }
 #about strong { font-size: 1.4rem; font-weight: 400; }
-#about h2 { margin: 1.2rem 0 .5rem; font-size: 1rem; font-weight: 400; opacity: .6; }
+#creditos { font-size: 14px; }
+#creditos .tipo { opacity: .6; } /* del color de «créditos» */
+#about h2 { margin: 2rem 0 .5rem; font-size: 1rem; font-weight: 400; opacity: .6; }
 #about small { opacity: .6; }
 #about a { color: inherit; }
 

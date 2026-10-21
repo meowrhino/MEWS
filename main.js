@@ -1,7 +1,7 @@
 // MEWS!: fondo generativo + música binaural que las noticias van tapando.
 //
 // Flujo: pantalla negra con el neko -> toque (arranca audio y fondo) -> el neko explica
-// -> corre a su esquina -> calma -> noticias cada vez más rápido. Si haces scroll y
+// (2º mensaje, otro toque) -> «sobre MEWS!» (3er mensaje, otro toque) -> vuelve a su esquina -> calma -> noticias cada vez más rápido. Si haces scroll y
 // sacas todas las noticias de la pantalla, el neko se rasca pensando, se duerme y las
 // noticias vuelven a empezar despacio.
 
@@ -294,19 +294,29 @@ function callar() {
     return wait(hablando ? FADE_SECONDS : 0);
 }
 
-// El neko explica, se calla y corre a su esquina. Tocarlo (o al bocadillo) se salta la explicación
+// Espera un toque en cualquier sitio menos en un enlace (el setTimeout evita recoger el toque que está en curso)
+function clic() {
+    return new Promise((r) => {
+        const f = (e) => {
+            if (e.target.closest('a')) return;
+            removeEventListener('click', f);
+            r();
+        };
+        setTimeout(() => addEventListener('click', f), 0);
+    });
+}
+
+// El neko explica (un toque), cuenta «sobre MEWS!» en el centro (otro toque) y vuelve a su esquina
 async function nekoIntro() {
     $('msg-hola').hidden = true;
     $('msg-instrucciones').hidden = false;
-    nekoBox.style.pointerEvents = 'auto';
-    await Promise.race([wait(INTRO_SECONDS), new Promise((r) => nekoBox.addEventListener('click', r, { once: true }))]);
-    nekoBox.style.pointerEvents = '';
+    await clic();
     await callar();
-    nekoMode = 'run';
     nekoBox.style.transition = `transform ${RUN_SECONDS}s ease-in-out`;
     nekoBox.classList.remove('intro');
-    await wait(RUN_SECONDS);
-    nekoMode = 'free';
+    await abrirSobre();
+    await clic();
+    await cerrarSobre(); // deja nekoMode = 'free' y pausado = false
     lastScroll = performance.now() - AWAKE_MS; // llega cansado: bosteza enseguida y se duerme
     $('about-btn').hidden = false;
 }
@@ -327,7 +337,8 @@ nekoEl.addEventListener('click', () => {
 // Se cierra con ese botón, con Esc o tocando fuera del bocadillo: el bocadillo se va y luego el neko vuelve a su esquina
 const aboutBtn = $('about-btn');
 let paseo = 0; // sube en cada ida o vuelta: si un paseo viejo termina una espera, ya no hace nada
-const sobreAbierto = () => aboutBtn.getAttribute('aria-expanded') === 'true';
+// con el botón oculto (la intro) el sobre lo gobierna nekoIntro, no los toques de fuera ni Esc
+const sobreAbierto = () => !aboutBtn.hidden && aboutBtn.getAttribute('aria-expanded') === 'true';
 
 async function abrirSobre() {
     const yo = ++paseo;
