@@ -185,7 +185,7 @@ function spawn() {
         updateVeil();
     }
     // Cada vez más rápido (si no se añadió ninguna, se reintenta con el mismo hueco)
-    scheduleSpawn(Math.max(MIN_GAP, FIRST_GAP * ACCEL ** Math.max(0, spawned - 1)));
+    scheduleSpawn(GAPS[Math.min(Math.max(0, spawned - 1), GAPS.length - 1)]);
 }
 
 function scheduleSpawn(seconds) {

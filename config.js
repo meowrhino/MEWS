@@ -2,13 +2,12 @@
 // Cambia un número, guarda y recarga la página. El código que los usa está en main.js.
 
 // ----- Ritmo (en segundos) -----
-// toca -> (2 clics del neko) -> RUN -> CALM -> 1ª noticia -> FIRST_GAP -> 2ª -> FIRST_GAP·ACCEL -> 3ª -> ...
+// toca -> (2 clics del neko) -> RUN -> CALM -> 1ª noticia -> GAPS[0] -> 2ª -> GAPS[1] -> 3ª -> ...
 const RUN_SECONDS = 1.6;      // lo que tarda en correr del centro a su esquina
 const CALM_SECONDS = 8;       // calma desde que vuelve a su esquina hasta la 1ª noticia
-const FIRST_GAP = 3.5;        // segundos entre la 1ª y la 2ª noticia
-const ACCEL = 0.45;           // aceleración: cada hueco dura esto × el anterior
-                              // 0.88 = un 12% más corto · 1 = sin aceleración · 0.8 = acelera más
-const MIN_GAP = 0.6;          // el hueco nunca baja de aquí
+// segundos entre una noticia y la siguiente: el 1º es de la 1ª a la 2ª, y así;
+// a partir del último se repite siempre ese
+const GAPS = [3.5, 1.6, 1.2, 1, 0.9, 0.8, 0.75, 0.7, 0.65, 0.6];
 
 // ----- Fondo y música -----
 const MAX_NEWS = 25;          // con esta cantidad el velo es negro total y la música calla

@@ -19,7 +19,7 @@ Salen de `noticias.json` (`NOTICIAS_URL` en `config.js`): un array de textos, o 
 - `MAX_NEWS`: cuántas noticias hacen falta para que la pantalla quede negra.
 - `MUSIC_VOLUME`, `BLEND_SECONDS`.
 - Aviso «haz scroll»: `HINT_FULL_NEWS`, `HINT_CURVE`.
-- Ritmo: `RUN_SECONDS`, `CALM_SECONDS`, `FIRST_GAP`, `ACCEL`, `MIN_GAP`.
+- Ritmo: `RUN_SECONDS`, `CALM_SECONDS`, `GAPS`.
 - Textos del neko: en `index.html`, dentro de `#bubble`.
 - Fondos: salen al azar de todo el pack base de Butterchurn (sin repetir seguido) y cambian solo al apartar todas las noticias (con «sobre MEWS!» abierto todo se pausa).
 - Al entrar, el neko da tres mensajes y cada uno espera un toque: bienvenida, instrucciones y «sobre MEWS!» (el mismo texto del botón). Luego vuelve a su esquina.
