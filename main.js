@@ -306,15 +306,30 @@ function callar() {
     return wait(hablando ? FADE_SECONDS : 0);
 }
 
+// Toque en cualquier sitio: evento 'toque' en el elemento donde se levanta el dedo (o el ratón).
+// No vale con 'click': en iOS no se dispara al tocar zonas sin nada clicable (el fondo),
+// aunque la ventana esté escuchando. Si el dedo se mueve más de TAP_SLOP es scroll, no toque.
+let tapStart = null;
+addEventListener('pointerdown', (e) => {
+    tapStart = e.isPrimary && e.button === 0 ? { x: e.clientX, y: e.clientY } : null;
+});
+addEventListener('pointerup', (e) => {
+    if (!tapStart || !e.isPrimary) return;
+    const esToque = Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) < TAP_SLOP;
+    tapStart = null;
+    if (esToque) e.target.dispatchEvent(new Event('toque', { bubbles: true }));
+});
+addEventListener('pointercancel', () => { tapStart = null; });
+
 // Espera un toque en cualquier sitio menos en un enlace (el setTimeout evita recoger el toque que está en curso)
 function clic() {
     return new Promise((r) => {
         const f = (e) => {
             if (e.target.closest('a')) return;
-            removeEventListener('click', f);
+            removeEventListener('toque', f);
             r();
         };
-        setTimeout(() => addEventListener('click', f), 0);
+        setTimeout(() => addEventListener('toque', f), 0);
     });
 }
 
@@ -392,7 +407,7 @@ async function cerrarSobre() {
 }
 
 aboutBtn.addEventListener('click', () => (sobreAbierto() ? cerrarSobre() : abrirSobre()));
-addEventListener('click', (e) => {
+addEventListener('toque', (e) => { // tocando fuera (en iOS el fondo no da 'click', ver pointerup)
     if (sobreAbierto() && e.target !== aboutBtn && !about.contains(e.target)) cerrarSobre();
 });
 addEventListener('keydown', (e) => { if (e.key === 'Escape' && sobreAbierto()) cerrarSobre(); });
