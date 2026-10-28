@@ -12,6 +12,7 @@ const canvas = $('bg'), veilEl = $('veil'), newsEl = $('news'), startEl = $('sta
 const nekoBox = $('neko-box'), nekoEl = $('neko'), bubble = $('bubble'), thoughtEl = $('thought');
 const about = $('about');
 const LINE_PX = 16;           // alto aproximado de una línea, para ruedas que scrollean por líneas
+const TAP_SLOP = 10;          // px que puede temblar el dedo sin que un toque pase a ser scroll
 const TICK_MS = 120;          // paso de las animaciones del neko
 const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
 
@@ -234,12 +235,19 @@ addEventListener('wheel', (e) => {
     scrollDown(e.deltaMode === 1 ? e.deltaY * LINE_PX : e.deltaY);
 }, { passive: false });
 
-let touchY = null;
-addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+// Al tocar, el dedo siempre tiembla un poco y algunos navegadores (iOS desde 1 px) ya lo mandan como
+// touchmove: si se cancela ese touchmove el click no llega y los toques del neko no funcionan.
+// Hasta TAP_SLOP px sigue siendo un toque y no se hace nada; a partir de ahí es scroll.
+let touchY = null, touchStartY = null;
+addEventListener('touchstart', (e) => { touchStartY = touchY = e.touches[0].clientY; }, { passive: true });
 addEventListener('touchmove', (e) => {
     if (about.open) return;
-    e.preventDefault();
     const y = e.touches[0].clientY;
+    if (touchStartY !== null) { // todavía puede ser un toque
+        if (Math.abs(y - touchStartY) < TAP_SLOP) return;
+        touchStartY = null;
+    }
+    e.preventDefault();
     scrollDown(touchY - y);
     touchY = y;
 }, { passive: false });
