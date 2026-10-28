@@ -1,14 +1,184 @@
 [
-    { "titulo": "La ONU reúne esta semana a líderes mundiales en un contexto especialmente tenso." },
-    { "titulo": "E. UU. propone a China un sistema para avisarse mutuamente de incidentes graves relacionados con la IA." },
-    { "titulo": "Los mercados vuelven a subir impulsados por el entusiasmo alrededor de la IA." },
-    { "titulo": "1.500 personas marcharon el domingo en Barcelona contra la ampliación de El Prat." },
-    { "titulo": "Récord de temperatura en el Mediterráneo por tercer verano consecutivo." },
-    { "titulo": "El precio del alquiler sube un 11% en las grandes ciudades." },
-    { "titulo": "Nueva ola de despidos en el sector tecnológico." },
-    { "titulo": "La sequía obliga a restringir el riego en varias comarcas." },
-    { "titulo": "Los centros de datos consumirán el doble de energía en 2030." },
-    { "titulo": "Bruselas abre una investigación a las grandes plataformas por desinformación." },
-    { "titulo": "Los incendios forestales arrasan miles de hectáreas en el norte." },
-    { "titulo": "Crece la ansiedad entre los jóvenes según un nuevo informe." }
+    {
+        "title": {
+            "es": "La ONU reúne esta semana a líderes mundiales en un contexto especialmente tenso.",
+            "ca": "L'ONU reuneix aquesta setmana líders mundials en un context especialment tens.",
+            "en": "The UN gathers world leaders this week amid especially high tensions."
+        }
+    },
+    {
+        "title": {
+            "es": "E. UU. propone a China un sistema para avisarse mutuamente de incidentes graves relacionados con la IA.",
+            "ca": "Els EUA proposen a la Xina un sistema per avisar-se mútuament d'incidents greus relacionats amb la IA.",
+            "en": "The US proposes to China a system to warn each other of serious AI-related incidents."
+        }
+    },
+    {
+        "title": {
+            "es": "Los mercados vuelven a subir impulsados por el entusiasmo alrededor de la IA.",
+            "ca": "Els mercats tornen a pujar impulsats per l'entusiasme al voltant de la IA.",
+            "en": "Markets rise again, driven by enthusiasm around AI."
+        }
+    },
+    {
+        "title": {
+            "es": "1.500 personas marcharon el domingo en Barcelona contra la ampliación de El Prat.",
+            "ca": "1.500 persones es van manifestar diumenge a Barcelona contra l'ampliació del Prat.",
+            "en": "1,500 people marched in Barcelona on Sunday against the expansion of El Prat airport."
+        }
+    },
+    {
+        "title": {
+            "es": "Récord de temperatura en el Mediterráneo por tercer verano consecutivo.",
+            "ca": "Rècord de temperatura a la Mediterrània per tercer estiu consecutiu.",
+            "en": "Record temperatures in the Mediterranean for the third summer in a row."
+        }
+    },
+    {
+        "title": {
+            "es": "El precio del alquiler sube un 11% en las grandes ciudades.",
+            "ca": "El preu del lloguer puja un 11% a les grans ciutats.",
+            "en": "Rents rise 11% in major cities."
+        }
+    },
+    {
+        "title": {
+            "es": "Nueva ola de despidos en el sector tecnológico.",
+            "ca": "Nova onada d'acomiadaments al sector tecnològic.",
+            "en": "New wave of layoffs in the tech sector."
+        }
+    },
+    {
+        "title": {
+            "es": "La sequía obliga a restringir el riego en varias comarcas.",
+            "ca": "La sequera obliga a restringir el reg a diverses comarques.",
+            "en": "Drought forces irrigation restrictions in several regions."
+        }
+    },
+    {
+        "title": {
+            "es": "Los centros de datos consumirán el doble de energía en 2030.",
+            "ca": "Els centres de dades consumiran el doble d'energia el 2030.",
+            "en": "Data centres will consume twice as much energy by 2030."
+        }
+    },
+    {
+        "title": {
+            "es": "Bruselas abre una investigación a las grandes plataformas por desinformación.",
+            "ca": "Brussel·les obre una investigació a les grans plataformes per desinformació.",
+            "en": "Brussels opens an investigation into major platforms over disinformation."
+        }
+    },
+    {
+        "title": {
+            "es": "Los incendios forestales arrasan miles de hectáreas en el norte.",
+            "ca": "Els incendis forestals arrasen milers d'hectàrees al nord.",
+            "en": "Wildfires sweep through thousands of hectares in the north."
+        }
+    },
+    {
+        "title": {
+            "es": "Crece la ansiedad entre los jóvenes según un nuevo informe.",
+            "ca": "Creix l'ansietat entre els joves, segons un nou informe.",
+            "en": "Anxiety is growing among young people, according to a new report."
+        }
+    },
+    {
+        "title": {
+            "es": "Google cambia las directrices de su IA y elimina una cláusula que prohibía su uso en la fabricación de armas y sistemas de vigilancia.",
+            "ca": "Google canvia les directrius de la seva IA i elimina una clàusula que en prohibia l'ús en la fabricació d'armes i sistemes de vigilància.",
+            "en": "Google changes its AI guidelines and removes a clause banning its use in weapons and surveillance systems."
+        }
+    },
+    {
+        "title": {
+            "es": "Las plataformas amplían la moderación automática de contenidos políticos.",
+            "ca": "Les plataformes amplien la moderació automàtica de continguts polítics.",
+            "en": "Platforms expand automated moderation of political content."
+        }
+    },
+    {
+        "title": {
+            "es": "Europa quiere endurecer (aún más) su política migratoria y avanzar hacia su propio ICE.",
+            "ca": "Europa vol endurir (encara més) la seva política migratòria i avançar cap al seu propi ICE.",
+            "en": "Europe wants to toughen its migration policy (even further) and move towards its own ICE."
+        }
+    },
+    {
+        "title": {
+            "es": "Francia endurece la seguridad tras los disturbios.",
+            "ca": "França reforça la seguretat després dels aldarulls.",
+            "en": "France tightens security after the riots."
+        }
+    },
+    {
+        "title": {
+            "es": "La IA generativa inunda internet de contenido sintético y dificulta distinguir lo real.",
+            "ca": "La IA generativa inunda internet de contingut sintètic i fa més difícil distingir què és real.",
+            "en": "Generative AI floods the internet with synthetic content, making it harder to tell what is real."
+        }
+    },
+    {
+        "title": {
+            "es": "Las apps de redes sociales diseñan notificaciones para maximizar el tiempo de pantalla.",
+            "ca": "Les apps de xarxes socials dissenyen notificacions per maximitzar el temps de pantalla.",
+            "en": "Social media apps design notifications to maximise screen time."
+        }
+    },
+    {
+        "title": {
+            "es": "Los algoritmos deciden qué información ven millones de personas cada día.",
+            "ca": "Els algoritmes decideixen quina informació veuen milions de persones cada dia.",
+            "en": "Algorithms decide what information millions of people see every day."
+        }
+    },
+    {
+        "title": {
+            "es": "El tiempo medio frente a una pantalla sigue aumentando en todo el mundo.",
+            "ca": "El temps mitjà davant una pantalla continua augmentant a tot el món.",
+            "en": "Average screen time continues to rise worldwide."
+        }
+    },
+    {
+        "title": {
+            "es": "Las empresas tecnológicas compiten por construir centros de datos cada vez más grandes.",
+            "ca": "Les empreses tecnològiques competeixen per construir centres de dades cada cop més grans.",
+            "en": "Tech companies compete to build ever-larger data centres."
+        }
+    },
+    {
+        "title": {
+            "es": "La vigilancia digital se normaliza en ciudades, escuelas y lugares de trabajo.",
+            "ca": "La vigilància digital es normalitza a ciutats, escoles i llocs de treball.",
+            "en": "Digital surveillance is becoming normalised in cities, schools and workplaces."
+        }
+    },
+    {
+        "title": {
+            "es": "El calor extremo vuelve a poner en riesgo la salud de millones de personas.",
+            "ca": "La calor extrema torna a posar en risc la salut de milions de persones.",
+            "en": "Extreme heat once again puts the health of millions of people at risk."
+        }
+    },
+    {
+        "title": {
+            "es": "El acceso a la vivienda se aleja aún más de los salarios medios.",
+            "ca": "L'accés a l'habitatge s'allunya encara més dels salaris mitjans.",
+            "en": "Housing slips even further out of reach of average wages."
+        }
+    },
+    {
+        "title": {
+            "es": "La automatización amenaza con transformar millones de empleos.",
+            "ca": "L'automatització amenaça de transformar milions de llocs de treball.",
+            "en": "Automation threatens to transform millions of jobs."
+        }
+    },
+    {
+        "title": {
+            "es": "Las plataformas convierten la atención de las personas en su principal negocio.",
+            "ca": "Les plataformes converteixen l'atenció de les persones en el seu principal negoci.",
+            "en": "Platforms turn human attention into their core business."
+        }
+    }
 ]

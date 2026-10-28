@@ -10,8 +10,7 @@
 const $ = (id) => document.getElementById(id);
 const canvas = $('bg'), veilEl = $('veil'), newsEl = $('news'), startEl = $('start');
 const nekoBox = $('neko-box'), nekoEl = $('neko'), bubble = $('bubble'), thoughtEl = $('thought');
-const about = $('about'), hintEl = $('scroll-hint');
-hintEl.style.height = `${NEWS_AREA * 100}%`; // centrado en la zona donde salen las noticias
+const about = $('about');
 const LINE_PX = 16;           // alto aproximado de una línea, para ruedas que scrollean por líneas
 const TICK_MS = 120;          // paso de las animaciones del neko
 const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
@@ -137,6 +136,13 @@ async function loadList(url) {
     }
 }
 
+// Un texto o { es, ca, en }: de estos, un idioma al azar cada vez que sale
+function enIdioma(t) {
+    if (typeof t === 'string') return t;
+    const v = Object.values(t);
+    return v[Math.floor(Math.random() * v.length)];
+}
+
 // Devuelve una función que saca los textos en orden aleatorio sin repetir hasta agotarlos
 function baraja(list) {
     let cola = [], ultimo = null;
@@ -163,7 +169,7 @@ function spawn() {
     if (texto) {
         const el = document.createElement('p');
         el.className = 'noticia';
-        el.textContent = texto;
+        el.textContent = enIdioma(texto);
         newsEl.append(el);
         const h = el.offsetHeight;
         const n = {
@@ -189,9 +195,6 @@ function scheduleSpawn(seconds) {
 
 function updateVeil() {
     veil = Math.min(1, news.length / MAX_NEWS);
-    // «haz scroll» sube de 0 a 1 entre MAX_NEWS y HINT_FULL_NEWS noticias, con curva
-    const t = Math.min(1, Math.max(0, (news.length - MAX_NEWS) / (HINT_FULL_NEWS - MAX_NEWS)));
-    hintEl.style.opacity = t ** HINT_CURVE;
     veilEl.style.opacity = BASE_DIM + (MAX_VEIL - BASE_DIM) * veil;
     if (master) master.gain.setTargetAtTime(MUSIC_VOLUME * (1 - veil) ** VOLUME_CURVE, ctx.currentTime, 0.8);
 }
@@ -201,7 +204,8 @@ function empezarCalma() {
     spawned = 0;
     clearTimeout(spawnTimer);
     premio = true;
-    thoughtEl.textContent = nextPensamiento() ?? '';
+    const p = nextPensamiento();
+    thoughtEl.textContent = p ? enIdioma(p) : '';
     bubble.classList.add('hidden'); // la ayuda no se monta encima del pensamiento
     cambiarFondo();
 }
@@ -314,7 +318,7 @@ async function nekoIntro() {
     await callar();
     nekoBox.style.transition = `transform ${RUN_SECONDS}s ease-in-out`;
     nekoBox.classList.remove('intro');
-    await abrirSobre();
+    await abrirSobre('run'); // del centro de la pantalla baja: corre hacia abajo
     await clic();
     await cerrarSobre(); // deja nekoMode = 'free' y pausado = false
     lastScroll = performance.now() - AWAKE_MS; // llega cansado: bosteza enseguida y se duerme
@@ -340,7 +344,7 @@ let paseo = 0; // sube en cada ida o vuelta: si un paseo viejo termina una esper
 // con el botón oculto (la intro) el sobre lo gobierna nekoIntro, no los toques de fuera ni Esc
 const sobreAbierto = () => !aboutBtn.hidden && aboutBtn.getAttribute('aria-expanded') === 'true';
 
-async function abrirSobre() {
+async function abrirSobre(modo = 'ida') {
     const yo = ++paseo;
     pausado = true;
     aboutBtn.textContent = 'cerrar';
@@ -349,7 +353,7 @@ async function abrirSobre() {
         nekoMode = 'quieto';
         await callar();
         if (yo !== paseo) return;
-        nekoMode = 'ida';
+        nekoMode = modo;
         nekoBox.classList.add('centro');
         await wait(RUN_SECONDS);
         if (yo !== paseo) return;

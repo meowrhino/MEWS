@@ -4,8 +4,8 @@
 // ----- Ritmo (en segundos) -----
 // toca -> (2 clics del neko) -> RUN -> CALM -> 1ª noticia -> FIRST_GAP -> 2ª -> FIRST_GAP·ACCEL -> 3ª -> ...
 const RUN_SECONDS = 1.6;      // lo que tarda en correr del centro a su esquina
-const CALM_SECONDS = 10;      // calma desde que vuelve a su esquina hasta la 1ª noticia
-const FIRST_GAP = 2;          // segundos entre la 1ª y la 2ª noticia
+const CALM_SECONDS = 8;       // calma desde que vuelve a su esquina hasta la 1ª noticia
+const FIRST_GAP = 3.5;        // segundos entre la 1ª y la 2ª noticia
 const ACCEL = 0.45;           // aceleración: cada hueco dura esto × el anterior
                               // 0.88 = un 12% más corto · 1 = sin aceleración · 0.8 = acelera más
 const MIN_GAP = 0.6;          // el hueco nunca baja de aquí
@@ -19,15 +19,12 @@ const MAX_VEIL = 0.97;        // opacidad del velo con MAX_NEWS noticias (no lle
 const VOLUME_CURVE = 1.5;     // cómo cae la música con el velo: 1 = lineal, más alto = calla antes
 
 // ----- Noticias -----
-// Array JSON de textos o de objetos con `titulo`/`title` (ver textoDe)
+// Array JSON de textos o de objetos con `title`; el title puede ir en tres idiomas
+// { "es", "ca", "en" } y cada vez que sale una noticia se elige uno al azar
 const NOTICIAS_URL = 'noticias.json';
 const NEWS_AREA = 0.85;       // las noticias salen en el 85% de arriba de la pantalla
 const NEWS_DRIFT = 0.3;       // y se desplazan a los lados hasta ±15% del ancho (este valor es el total)
-const textoDe = (n) => (typeof n === 'string' ? n : n?.titulo ?? n?.title);
-
-// ----- Aviso «haz scroll» (fijo, aparece entre MAX_NEWS y HINT_FULL_NEWS noticias) -----
-const HINT_FULL_NEWS = 40;    // con tantas noticias el aviso está a opacidad 1
-const HINT_CURVE = 1.5;       // 1 = sube lineal · más alto = aparece más tarde y de golpe al final
+const textoDe = (n) => (typeof n === 'string' ? n : n?.title ?? n?.titulo);
 
 // ----- La calma cuando apartas todas las noticias -----
 // paras de hacer scroll -> el neko se rasca con el pensamiento encima -> bosteza -> se duerme

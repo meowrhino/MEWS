@@ -40,24 +40,6 @@ html, body {
 }
 .noticia.visible { opacity: 1; }
 
-/* «haz scroll»: fijo, negro, por encima de las noticias (se lee donde cruza el texto blanco).
-   La altura (NEWS_AREA) la pone main.js: así se centra en la zona donde salen las noticias */
-#scroll-hint {
-    position: fixed;
-    inset: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    color: #000;
-    font-size: clamp(3.5rem, 17vw, 7.5rem);
-    line-height: normal;
-    letter-spacing: -.025em;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .6s ease;
-}
-
 /* Los bocadillos aparecen (con un pequeño rebote) y se van en .6s: main.js espera eso (FADE_SECONDS) antes de mover al neko */
 
 /* Neko + bocadillo. En su sitio: abajo a la izquierda. Con .intro: en el centro de la pantalla
